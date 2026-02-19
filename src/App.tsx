@@ -2,37 +2,45 @@ import { useState, useEffect } from 'react';
 import { Heart, Phone, MapPin, Globe, Hotel, Home as HomeIcon, Bed, MessageSquare } from 'lucide-react';
 
 const ROOMS = [
-  { id:1, name:'Deluxe AC Room', type:'Deluxe', tag:'Best Value',
-    price:3660, rating:4.7, reviews:318,
-    features:['King Bed','Air Conditioning','Cable TV','Free WiFi','Attached Bath'],
-    desc:'A comfortable Deluxe AC Room offering a peaceful stay steps from the Jagannath Temple. Clean, hygienic and value for money.',
-    gradient:'linear-gradient(135deg,#1A0A00,#5C2A00,#E8760A)',
-    includes:['Free WiFi','Daily Housekeeping','Paid Breakfast','Free Cancellation'] },
-  { id:2, name:'Standard AC Room', type:'Standard', tag:null,
-    price:2500, rating:4.6, reviews:210,
-    features:['Double Bed','Air Conditioning','Attached Bath','Free WiFi'],
-    desc:'Ideal for solo travelers and couples. Clean, affordable and well-located near Jagannath Temple.',
-    gradient:'linear-gradient(135deg,#0A1A00,#2A5C00,#70A030)',
-    includes:['Free WiFi','Daily Housekeeping','Free Cancellation'] },
-  { id:3, name:'Economy Non-AC Room', type:'Economy', tag:null,
-    price:1200, rating:4.5, reviews:165,
-    features:['Single Bed','Ceiling Fan','Common Bathroom','Budget Friendly'],
-    desc:'Perfect for budget pilgrims. Clean, safe and simple stay at the most affordable price in Puri.',
-    gradient:'linear-gradient(135deg,#00101A,#004060,#0080C0)',
-    includes:['Common Bathroom','Daily Housekeeping','Free Cancellation'] },
-  { id:4, name:'Family Suite', type:'Suite', tag:'Most Popular',
-    price:5500, rating:4.8, reviews:95,
-    features:['2 Double Beds','Air Conditioning','Private Bathroom','Cable TV','Free WiFi','Seating Area'],
-    desc:'Spacious suite perfect for families visiting for Jagannath Darshan. Two beds, private bath and seating area.',
-    gradient:'linear-gradient(135deg,#1A0A20,#5A1A60,#A030B0)',
-    includes:['Free WiFi','Daily Housekeeping','Paid Breakfast','Free Cancellation','Extra Bed on Request'] },
+  {
+    id: 1, name: 'Deluxe AC Room', type: 'Deluxe', tag: 'Best Value',
+    price: 3660, rating: 4.7, reviews: 318,
+    features: ['King Bed', 'Air Conditioning', 'Cable TV', 'Free WiFi', 'Attached Bath'],
+    desc: 'A comfortable Deluxe AC Room offering a peaceful stay steps from the Jagannath Temple. Clean, hygienic and value for money.',
+    gradient: 'linear-gradient(135deg,#1A0A00,#5C2A00,#E8760A)',
+    includes: ['Free WiFi', 'Daily Housekeeping', 'Paid Breakfast', 'Free Cancellation']
+  },
+  {
+    id: 2, name: 'Standard AC Room', type: 'Standard', tag: null,
+    price: 2500, rating: 4.6, reviews: 210,
+    features: ['Double Bed', 'Air Conditioning', 'Attached Bath', 'Free WiFi'],
+    desc: 'Ideal for solo travelers and couples. Clean, affordable and well-located near Jagannath Temple.',
+    gradient: 'linear-gradient(135deg,#0A1A00,#2A5C00,#70A030)',
+    includes: ['Free WiFi', 'Daily Housekeeping', 'Free Cancellation']
+  },
+  {
+    id: 3, name: 'Economy Non-AC Room', type: 'Economy', tag: null,
+    price: 1200, rating: 4.5, reviews: 165,
+    features: ['Single Bed', 'Ceiling Fan', 'Common Bathroom', 'Budget Friendly'],
+    desc: 'Perfect for budget pilgrims. Clean, safe and simple stay at the most affordable price in Puri.',
+    gradient: 'linear-gradient(135deg,#00101A,#004060,#0080C0)',
+    includes: ['Common Bathroom', 'Daily Housekeeping', 'Free Cancellation']
+  },
+  {
+    id: 4, name: 'Family Suite', type: 'Suite', tag: 'Most Popular',
+    price: 5500, rating: 4.8, reviews: 95,
+    features: ['2 Double Beds', 'Air Conditioning', 'Private Bathroom', 'Cable TV', 'Free WiFi', 'Seating Area'],
+    desc: 'Spacious suite perfect for families visiting for Jagannath Darshan. Two beds, private bath and seating area.',
+    gradient: 'linear-gradient(135deg,#1A0A20,#5A1A60,#A030B0)',
+    includes: ['Free WiFi', 'Daily Housekeeping', 'Paid Breakfast', 'Free Cancellation', 'Extra Bed on Request']
+  },
 ];
 
 const AMENITIES = [
-  {icon:'🏊',name:'Pool'},{icon:'📶',name:'Free WiFi'},
-  {icon:'🍽️',name:'Restaurant'},{icon:'❄️',name:'AC Rooms'},
-  {icon:'♿',name:'Accessible'},{icon:'🅿️',name:'Parking'},
-  {icon:'☕',name:'Breakfast'},{icon:'📺',name:'Cable TV'}
+  { icon: '🏊', name: 'Pool' }, { icon: '📶', name: 'Free WiFi' },
+  { icon: '🍽️', name: 'Restaurant' }, { icon: '❄️', name: 'AC Rooms' },
+  { icon: '♿', name: 'Accessible' }, { icon: '🅿️', name: 'Parking' },
+  { icon: '☕', name: 'Breakfast' }, { icon: '📺', name: 'Cable TV' }
 ];
 
 function App() {
@@ -41,7 +49,7 @@ function App() {
   const [guests, setGuests] = useState(2);
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [filter, setFilter] = useState('All Rooms');
-  const [form, setForm] = useState({fname:'',lname:'',phone:'',email:'',msg:''});
+  const [form, setForm] = useState({ fname: '', lname: '', phone: '', email: '', msg: '' });
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
@@ -73,7 +81,7 @@ function App() {
 
   const handleSubmit = () => {
     if (form.fname && form.lname && form.phone && form.email) {
-      setForm({fname:'',lname:'',phone:'',email:'',msg:''});
+      setForm({ fname: '', lname: '', phone: '', email: '', msg: '' });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 5000);
     }
@@ -116,7 +124,7 @@ function App() {
     <div className="animate-fadeUp overflow-y-auto pb-20">
       <StatusBar />
 
-      <div className="relative min-h-[320px] overflow-hidden" style={{background: 'linear-gradient(135deg, #1A0A00 0%, #3D1C00 50%, #F59820 100%)'}}>
+      <div className="relative min-h-[320px] overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00 0%, #3D1C00 50%, #F59820 100%)' }}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(232,118,10,0.3),transparent_60%)]" />
         <div className="absolute top-10 right-10 w-32 h-32 rounded-full border-2 border-white/10" />
         <div className="absolute top-14 right-14 w-24 h-24 rounded-full border-2 border-white/15" />
@@ -175,7 +183,7 @@ function App() {
           <button
             onClick={() => setPage('rooms')}
             className="w-full py-3 rounded-xl font-semibold text-white text-sm"
-            style={{background: 'linear-gradient(135deg, #E8760A, #F59820)'}}
+            style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}
           >
             🔍 Check Availability
           </button>
@@ -193,11 +201,10 @@ function App() {
             <button
               key={f}
               onClick={() => setFilter(f === 'AC Room' ? 'AC' : f)}
-              className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                filter === (f === 'AC Room' ? 'AC' : f)
+              className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${filter === (f === 'AC Room' ? 'AC' : f)
                   ? 'bg-[#1A0A00] text-[#F59820]'
                   : 'bg-white border border-[#FFE5C0] text-[#7A5230]'
-              }`}
+                }`}
             >
               {f}
             </button>
@@ -205,14 +212,14 @@ function App() {
         </div>
 
         <div className="flex gap-3 overflow-x-auto pb-2">
-          {ROOMS.slice(0, 3).map(room => (
+          {getFilteredRooms().slice(0, 3).map(room => (
             <div
               key={room.id}
               onClick={() => { setSelectedRoom(room); setPage('detail'); }}
               className="min-w-[210px] bg-white rounded-xl shadow-md overflow-hidden cursor-pointer"
             >
-              <div className="relative h-[135px] overflow-hidden" style={{background: room.gradient}}>
-                <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.1) 10px, rgba(255,255,255,.1) 20px)'}} />
+              <div className="relative h-[135px] overflow-hidden" style={{ background: room.gradient }}>
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.1) 10px, rgba(255,255,255,.1) 20px)' }} />
                 <span className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white text-[10px] px-2 py-1 rounded-full">
                   {room.type}
                 </span>
@@ -242,7 +249,7 @@ function App() {
         </div>
       </div>
 
-      <div className="mx-4 mb-6 p-5 rounded-2xl relative overflow-hidden" style={{background: 'linear-gradient(135deg, #1A0A00, #3D1C00)'}}>
+      <div className="mx-4 mb-6 p-5 rounded-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
         <div className="absolute top-0 right-0 w-32 h-32 border-2 border-white/10 rounded-full -mr-10 -mt-10" />
         <div className="relative">
           <div className="inline-block bg-[#D4A017]/20 border border-[#D4A017]/30 text-[#D4A017] text-xs px-3 py-1 rounded-full mb-3">
@@ -250,7 +257,12 @@ function App() {
           </div>
           <h3 className="font-['Playfair_Display'] text-xl text-white mb-3 leading-tight">Free Cancellation Available</h3>
           <div className="flex items-center gap-3">
-            <button className="bg-white text-[#1A0A00] px-5 py-2.5 rounded-lg font-semibold text-sm">Book Now</button>
+            <button
+              onClick={() => { setSelectedRoom(ROOMS[0]); setPage('detail'); }}
+              className="bg-white text-[#1A0A00] px-5 py-2.5 rounded-lg font-semibold text-sm"
+            >
+              Book Now
+            </button>
             <span className="text-[#F59820] font-semibold text-sm">₹3,660 per night</span>
           </div>
         </div>
@@ -325,7 +337,7 @@ function App() {
       <div className="animate-fadeUp overflow-y-auto pb-20">
         <StatusBar />
 
-        <div className="relative min-h-[180px] overflow-hidden" style={{background: 'linear-gradient(135deg, #1A0A00, #3D1C00)'}}>
+        <div className="relative min-h-[180px] overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
           <div className="relative z-10 px-5 py-6">
             <h1 className="font-['Playfair_Display'] text-2xl font-semibold text-white mb-2">Rooms & Tariff</h1>
             <p className="text-white/70 text-sm">Comfortable stays near Jagannath Temple</p>
@@ -339,11 +351,10 @@ function App() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                  filter === f
+                className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${filter === f
                     ? 'bg-[#1A0A00] text-[#F59820]'
                     : 'bg-white border border-[#FFE5C0] text-[#7A5230]'
-                }`}
+                  }`}
               >
                 {f}
               </button>
@@ -354,8 +365,8 @@ function App() {
         <div className="px-4 space-y-4">
           {filtered.map(room => (
             <div key={room.id} className="bg-white rounded-2xl shadow-md overflow-hidden">
-              <div className="relative h-[175px] overflow-hidden" style={{background: room.gradient}}>
-                <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 15px, rgba(255,255,255,.1) 15px, rgba(255,255,255,.1) 30px)'}} />
+              <div className="relative h-[175px] overflow-hidden" style={{ background: room.gradient }}>
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 15px, rgba(255,255,255,.1) 15px, rgba(255,255,255,.1) 30px)' }} />
                 <div className="absolute bottom-5 left-5 w-20 h-20 rounded-full border-2 border-white/20" />
 
                 <div className="absolute top-3 left-3 flex gap-2">
@@ -404,7 +415,7 @@ function App() {
                   <button
                     onClick={() => { setSelectedRoom(room); setPage('detail'); }}
                     className="px-5 py-2.5 rounded-lg font-semibold text-sm text-white"
-                    style={{background: 'linear-gradient(135deg, #E8760A, #F59820)'}}
+                    style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}
                   >
                     Book Now
                   </button>
@@ -421,8 +432,8 @@ function App() {
     <div className="animate-fadeUp overflow-y-auto pb-32">
       <StatusBar />
 
-      <div className="relative h-[290px] overflow-hidden" style={{background: selectedRoom.gradient}}>
-        <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,.1) 20px, rgba(255,255,255,.1) 40px)'}} />
+      <div className="relative h-[290px] overflow-hidden" style={{ background: selectedRoom.gradient }}>
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,.1) 20px, rgba(255,255,255,.1) 40px)' }} />
         <div className="absolute top-10 right-10 w-32 h-32 rounded-full border-2 border-white/20" />
 
         <div className="relative z-10 px-4 py-4">
@@ -440,7 +451,24 @@ function App() {
               >
                 <Heart size={18} fill={wishlist.includes(selectedRoom.id) ? '#E8760A' : 'none'} stroke={wishlist.includes(selectedRoom.id) ? '#E8760A' : 'white'} />
               </button>
-              <button className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center">
+              <button
+                onClick={() => {
+                  try {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'Hotel Amruta Bhojana',
+                        text: `Check out this ${selectedRoom.name} at Hotel Amruta Bhojana!`,
+                        url: window.location.href,
+                      });
+                    } else {
+                      alert('Share feature not supported on this device/browser');
+                    }
+                  } catch (error) {
+                    console.error('Error sharing:', error);
+                  }
+                }}
+                className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center"
+              >
                 <span className="text-white">↗</span>
               </button>
             </div>
@@ -470,7 +498,7 @@ function App() {
           </div>
         </div>
 
-        <div className="h-px mb-5" style={{background: 'linear-gradient(90deg, transparent, #FFE5C0 50%, transparent)'}} />
+        <div className="h-px mb-5" style={{ background: 'linear-gradient(90deg, transparent, #FFE5C0 50%, transparent)' }} />
 
         <div className="mb-5">
           <h2 className="font-['Playfair_Display'] text-lg font-semibold text-[#1A0A00] mb-3">About This Room</h2>
@@ -549,7 +577,7 @@ function App() {
           <button
             onClick={() => window.open('tel:+919437388224')}
             className="px-6 py-3 rounded-xl font-semibold text-sm text-white flex items-center gap-2"
-            style={{background: 'linear-gradient(135deg, #E8760A, #F59820)'}}
+            style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}
           >
             📞 Reserve Now
           </button>
@@ -562,7 +590,7 @@ function App() {
     <div className="animate-fadeUp overflow-y-auto pb-20">
       <StatusBar />
 
-      <div className="relative min-h-[180px] overflow-hidden" style={{background: 'linear-gradient(135deg, #1A0A00, #3D1C00)'}}>
+      <div className="relative min-h-[180px] overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
         <div className="relative z-10 px-5 py-6">
           <div className="inline-block bg-[#D4A017]/20 border border-[#D4A017]/30 text-[#D4A017] text-xs px-3 py-1 rounded-full mb-3">
             Get in Touch
@@ -616,7 +644,7 @@ function App() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-md p-5 mb-4 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 20px, #E8760A 20px, #E8760A 21px), repeating-linear-gradient(90deg, transparent, transparent 20px, #E8760A 20px, #E8760A 21px)'}} />
+          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 20px, #E8760A 20px, #E8760A 21px), repeating-linear-gradient(90deg, transparent, transparent 20px, #E8760A 20px, #E8760A 21px)' }} />
           <div className="relative">
             <div className="text-4xl mb-3 text-center">📍</div>
             <h3 className="font-['Playfair_Display'] text-lg font-semibold text-[#1A0A00] text-center mb-2">Location</h3>
@@ -692,14 +720,14 @@ function App() {
                 type="text"
                 placeholder="First Name"
                 value={form.fname}
-                onChange={(e) => setForm({...form, fname: e.target.value})}
+                onChange={(e) => setForm({ ...form, fname: e.target.value })}
                 className="px-4 py-3 border border-[#FFE5C0] rounded-xl text-sm focus:outline-none focus:border-[#E8760A] text-[#1A0A00]"
               />
               <input
                 type="text"
                 placeholder="Last Name"
                 value={form.lname}
-                onChange={(e) => setForm({...form, lname: e.target.value})}
+                onChange={(e) => setForm({ ...form, lname: e.target.value })}
                 className="px-4 py-3 border border-[#FFE5C0] rounded-xl text-sm focus:outline-none focus:border-[#E8760A] text-[#1A0A00]"
               />
             </div>
@@ -707,27 +735,27 @@ function App() {
               type="tel"
               placeholder="Phone Number"
               value={form.phone}
-              onChange={(e) => setForm({...form, phone: e.target.value})}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="w-full px-4 py-3 border border-[#FFE5C0] rounded-xl text-sm focus:outline-none focus:border-[#E8760A] text-[#1A0A00]"
             />
             <input
               type="email"
               placeholder="Email Address"
               value={form.email}
-              onChange={(e) => setForm({...form, email: e.target.value})}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="w-full px-4 py-3 border border-[#FFE5C0] rounded-xl text-sm focus:outline-none focus:border-[#E8760A] text-[#1A0A00]"
             />
             <textarea
               placeholder="Your Message"
               rows={4}
               value={form.msg}
-              onChange={(e) => setForm({...form, msg: e.target.value})}
+              onChange={(e) => setForm({ ...form, msg: e.target.value })}
               className="w-full px-4 py-3 border border-[#FFE5C0] rounded-xl text-sm focus:outline-none focus:border-[#E8760A] resize-none text-[#1A0A00]"
             />
             <button
               onClick={handleSubmit}
               className="w-full py-3 rounded-xl font-semibold text-sm text-white"
-              style={{background: 'linear-gradient(135deg, #1A0A00, #E8760A)'}}
+              style={{ background: 'linear-gradient(135deg, #1A0A00, #E8760A)' }}
             >
               ✉️ Send Message
             </button>
