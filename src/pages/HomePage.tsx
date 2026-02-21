@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, Phone, X } from 'lucide-react';
-import { StatusBar } from '../components/StatusBar';
 import { AnimatedImage } from '../components/AnimatedImage';
-import { ROOMS, AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooftop } from '../data/constants';
+import { ROOMS, AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooftop, HERO_IMAGES } from '../data/constants';
 import { GoogleReviews } from '../components/GoogleReviews';
 import { useAppState } from '../hooks/useAppState';
 
@@ -13,17 +12,34 @@ interface HomePageProps {
 export const HomePage = ({ state }: HomePageProps) => {
     const { setPage, wishlist, toggleWishlist, filter, setFilter, getFilteredRooms, setMenuOpen } = state;
     const [selectedImage, setSelectedImage] = useState<{ src: string, label: string } | null>(null);
+    const [heroIdx, setHeroIdx] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setHeroIdx(prev => (prev + 1) % HERO_IMAGES.length);
+        }, 5000);
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <div className="animate-fadeUp overflow-y-auto pb-20">
-            <StatusBar />
 
             {/* Hero */}
-            <div className="relative min-h-[320px] overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00 0%, #3D1C00 50%, #F59820 100%)' }}>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(232,118,10,0.3),transparent_60%)]" />
-                <div className="absolute top-10 right-10 w-32 h-32 rounded-full border-2 border-white/10" />
-                <div className="absolute top-14 right-14 w-24 h-24 rounded-full border-2 border-white/15" />
-                <div className="absolute top-16 right-16 w-20 h-20 rounded-full border-2 border-white/20" />
+            <div className="relative min-h-[360px] overflow-hidden bg-[#1A0A00]">
+                {/* Image Slider */}
+                <div className="absolute inset-0 transition-opacity duration-1000">
+                    {HERO_IMAGES.map((img, i) => (
+                        <div
+                            key={i}
+                            className={`absolute inset-0 transition-opacity duration-1000 ${i === heroIdx ? 'opacity-100' : 'opacity-0'}`}
+                        >
+                            <img src={img} alt={`Hero ${i + 1}`} className="w-full h-full object-cover opacity-60" />
+                        </div>
+                    ))}
+                </div>
+
+                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-[#FFFCF7]/10" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(232,118,10,0.2),transparent_60%)]" />
 
                 <div className="relative z-10 px-5 pt-4">
                     <div className="flex justify-between items-start mb-4">
@@ -79,6 +95,16 @@ export const HomePage = ({ state }: HomePageProps) => {
                         <span className="font-semibold">{HOTEL_INFO.rating}</span>
                         <span>·</span>
                         <span className="opacity-80">{HOTEL_INFO.reviewCount} Reviews on Google</span>
+                    </div>
+
+                    {/* Slider indicators */}
+                    <div className="flex gap-1.5 mt-2">
+                        {HERO_IMAGES.map((_, i) => (
+                            <div
+                                key={i}
+                                className={`h-1 rounded-full transition-all duration-300 ${i === heroIdx ? 'bg-[#F59820] w-6' : 'bg-white/30 w-1.5'}`}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>

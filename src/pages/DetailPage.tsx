@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
-import { StatusBar } from '../components/StatusBar';
 import { AnimatedImage } from '../components/AnimatedImage';
 import { useAppState } from '../hooks/useAppState';
 import { HOTEL_INFO } from '../data/constants';
@@ -18,7 +17,6 @@ export const DetailPage = ({ state }: DetailPageProps) => {
 
     return (
         <div className="animate-fadeUp overflow-y-auto pb-32">
-            <StatusBar />
 
             {/* Image hero with carousel */}
             <div className="relative h-[290px] overflow-hidden">

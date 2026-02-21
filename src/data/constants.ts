@@ -8,6 +8,19 @@ export { default as highlightExterior1 } from '../images/hotel-highlight-exterio
 export { default as highlightExterior2 } from '../images/hotel-highlight-exterior-2.jpg';
 export { default as highlightLobby } from '../images/hotel-highlight-lobby.jpg';
 
+// Hero Slider Images
+export { default as hero1 } from '../images/IMG-20260220-WA0006.jpg';
+export { default as hero2 } from '../images/IMG-20260220-WA0007.jpg';
+export { default as hero3 } from '../images/IMG-20260220-WA0008.jpg';
+export { default as hero4 } from '../images/IMG-20260220-WA0009.jpg';
+
+import hero1 from '../images/IMG-20260220-WA0006.jpg';
+import hero2 from '../images/IMG-20260220-WA0007.jpg';
+import hero3 from '../images/IMG-20260220-WA0008.jpg';
+import hero4 from '../images/IMG-20260220-WA0009.jpg';
+
+export const HERO_IMAGES = [hero1, hero2, hero3, hero4];
+
 // Room image imports
 import deluxeAc1 from '../images/room-deluxe-ac-1.jpg';
 import deluxeAc2 from '../images/room-deluxe-ac-2.jpg';

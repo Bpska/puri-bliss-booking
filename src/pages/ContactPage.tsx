@@ -1,4 +1,3 @@
-import { StatusBar } from '../components/StatusBar';
 import { HOTEL_INFO, hotelLogo } from '../data/constants';
 import { useAppState } from '../hooks/useAppState';
 
@@ -17,7 +16,6 @@ export const ContactPage = ({ state }: ContactPageProps) => {
 
     return (
         <div className="animate-fadeUp overflow-y-auto pb-20">
-            <StatusBar />
 
             <div className="relative min-h-[180px] overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
                 <div className="relative z-10 px-5 py-6">

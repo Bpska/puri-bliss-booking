@@ -1,5 +1,4 @@
 import { Heart } from 'lucide-react';
-import { StatusBar } from '../components/StatusBar';
 import { AnimatedImage } from '../components/AnimatedImage';
 import { useAppState } from '../hooks/useAppState';
 import { hotelLogo } from '../data/constants';
@@ -14,7 +13,6 @@ export const RoomsPage = ({ state }: RoomsPageProps) => {
 
     return (
         <div className="animate-fadeUp overflow-y-auto pb-20">
-            <StatusBar />
 
             <div className="relative min-h-[180px] overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
                 <div className="relative z-10 px-5 py-5 flex items-center gap-4">
