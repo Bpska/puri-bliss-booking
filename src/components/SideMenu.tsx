@@ -10,7 +10,7 @@ interface SideMenuProps {
 export const SideMenu = ({ page, setPage, onClose }: SideMenuProps) => (
     <>
         <div className="fixed inset-0 bg-black/50 z-[60]" onClick={onClose} />
-        <div className="fixed top-0 right-0 h-full w-64 bg-white z-[70] shadow-2xl flex flex-col animate-slideDown">
+        <div className="fixed top-0 right-0 h-full w-64 md:w-80 bg-white z-[70] shadow-2xl flex flex-col animate-slideDown">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#FFE5C0]">
                 <span className="font-['Playfair_Display'] text-base font-semibold text-[#1A0A00]">Menu</span>
                 <button

@@ -11,115 +11,116 @@ export const Footer = () => (
         {/* Top accent line */}
         <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, transparent, #D4A017, #E8760A, #D4A017, transparent)' }} />
 
-        <div className="px-5 pt-8 pb-4">
+        <div className="px-5 pt-8 pb-4 md:px-12 lg:px-20 md:pt-12 md:pb-8">
 
-            {/* Brand block */}
-            <div className="mb-6 text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full border-2 border-[#D4A017]/40 mb-3 overflow-hidden bg-white">
-                    <img src={hotelLogoBW} alt="Hotel Amruta Bhojana" className="w-full h-full object-contain p-2 animate-fadeIn" />
+            {/* Desktop: multi-column layout */}
+            <div className="md:grid md:grid-cols-4 md:gap-8">
+                {/* Brand block */}
+                <div className="mb-6 text-center md:text-left md:col-span-1">
+                    <div className="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-[#D4A017]/40 mb-3 overflow-hidden bg-white">
+                        <img src={hotelLogoBW} alt="Hotel Amruta Bhojana" className="w-full h-full object-contain p-2 animate-fadeIn" />
+                    </div>
+                    <h2 className="font-['Playfair_Display'] text-lg md:text-xl font-semibold text-white mb-1">Hotel Amruta Bhojana</h2>
+                    <p className="text-[#7A5230] text-[11px] md:text-xs">Near Jagannath Temple, Puri · Odisha</p>
+                    <div className="flex justify-center md:justify-start gap-1 mt-2">
+                        {[...Array(5)].map((_, i) => <span key={i} className="text-[#D4A017] text-xs">★</span>)}
+                    </div>
+                    <p className="text-[#7A5230] text-[10px] md:text-xs mt-1">{HOTEL_INFO.rating}/5 · {HOTEL_INFO.reviewCount} Google Reviews</p>
                 </div>
-                <h2 className="font-['Playfair_Display'] text-lg font-semibold text-white mb-1">Hotel Amruta Bhojana</h2>
-                <p className="text-[#7A5230] text-[11px]">Near Jagannath Temple, Puri · Odisha</p>
-                <div className="flex justify-center gap-1 mt-2">
-                    {[...Array(5)].map((_, i) => <span key={i} className="text-[#D4A017] text-xs">★</span>)}
-                </div>
-                <p className="text-[#7A5230] text-[10px] mt-1">{HOTEL_INFO.rating}/5 · {HOTEL_INFO.reviewCount} Google Reviews</p>
-            </div>
 
-            {/* Divider */}
-            <div className="h-px mb-6" style={{ background: 'linear-gradient(90deg, transparent, #3D1C00 50%, transparent)' }} />
-
-            {/* Quick contacts */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-                <a
-                    href={`tel:${HOTEL_INFO.phone}`}
-                    className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-3 transition-all active:scale-95 hover:bg-white/10"
-                >
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}>
-                        <span className="text-base">📞</span>
-                    </div>
-                    <div>
-                        <div className="text-[10px] text-[#7A5230]">Call Us</div>
-                        <div className="text-xs text-white font-semibold">+91 94373 88224</div>
-                    </div>
-                </a>
-                <a
-                    href={`https://wa.me/${HOTEL_INFO.whatsapp}?text=Hi%2C%20I%20would%20like%20to%20book%20a%20room`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-3 transition-all active:scale-95 hover:bg-white/10"
-                >
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0" style={{ background: 'linear-gradient(135deg, #25D366, #128C7E)' }}>
-                        <WhatsAppIcon />
-                    </div>
-                    <div>
-                        <div className="text-[10px] text-[#7A5230]">WhatsApp</div>
-                        <div className="text-xs text-white font-semibold">Chat with Us</div>
-                    </div>
-                </a>
-            </div>
-
-            {/* Info grid */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-6 text-xs">
-                <div>
-                    <div className="text-[#D4A017] font-semibold text-[10px] uppercase tracking-wider mb-2">Contact</div>
-                    <div className="space-y-1.5">
+                {/* Contact info */}
+                <div className="mb-6 md:mb-0">
+                    <div className="text-[#D4A017] font-semibold text-[10px] md:text-xs uppercase tracking-wider mb-2 md:mb-3">Contact</div>
+                    <div className="space-y-1.5 md:space-y-2 text-xs md:text-sm">
                         <p className="text-[#B08050]">📍 {HOTEL_INFO.address}</p>
                         <a href={`mailto:${HOTEL_INFO.email}`} className="block text-[#B08050] hover:text-[#E8760A] transition-colors truncate">✉️ {HOTEL_INFO.email}</a>
+                        <a href={`tel:${HOTEL_INFO.phone}`} className="block text-[#B08050] hover:text-[#E8760A] transition-colors">📞 +91 94373 88224</a>
                     </div>
                 </div>
-                <div>
-                    <div className="text-[#D4A017] font-semibold text-[10px] uppercase tracking-wider mb-2">Hours</div>
-                    <div className="space-y-1.5 text-[#B08050]">
+
+                {/* Hours */}
+                <div className="mb-6 md:mb-0">
+                    <div className="text-[#D4A017] font-semibold text-[10px] md:text-xs uppercase tracking-wider mb-2 md:mb-3">Hours</div>
+                    <div className="space-y-1.5 md:space-y-2 text-[#B08050] text-xs md:text-sm">
                         <p>🕘 Check-in: {HOTEL_INFO.checkin}</p>
                         <p>🕗 Check-out: {HOTEL_INFO.checkout}</p>
                         <p>🛎️ Reception: 24 × 7</p>
                     </div>
                 </div>
-            </div>
 
-            {/* Quick links */}
-            <div className="mb-6">
-                <div className="text-[#D4A017] font-semibold text-[10px] uppercase tracking-wider mb-2">Quick Links</div>
-                <div className="flex flex-wrap gap-2">
-                    {[
-                        { label: 'Google Maps', href: HOTEL_INFO.maps },
-                        { label: 'Book on Agoda', href: HOTEL_INFO.agoda },
-                        { label: 'Website', href: HOTEL_INFO.website },
-                    ].map(({ label, href }) => (
+                {/* Quick links + Quick contacts */}
+                <div className="mb-6 md:mb-0">
+                    <div className="text-[#D4A017] font-semibold text-[10px] md:text-xs uppercase tracking-wider mb-2 md:mb-3">Quick Links</div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {[
+                            { label: 'Google Maps', href: HOTEL_INFO.maps },
+                            { label: 'Book on Agoda', href: HOTEL_INFO.agoda },
+                            { label: 'Website', href: HOTEL_INFO.website },
+                        ].map(({ label, href }) => (
+                            <a
+                                key={label}
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[10px] md:text-xs bg-white/5 border border-white/10 text-[#B08050] px-3 py-1.5 rounded-full transition-all active:scale-95 hover:border-[#E8760A]/50 hover:text-[#E8760A]"
+                            >
+                                {label} →
+                            </a>
+                        ))}
+                    </div>
+
+                    {/* Quick contacts */}
+                    <div className="grid grid-cols-1 gap-2">
                         <a
-                            key={label}
-                            href={href}
+                            href={`tel:${HOTEL_INFO.phone}`}
+                            className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-3 transition-all active:scale-95 hover:bg-white/10"
+                        >
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}>
+                                <span className="text-base">📞</span>
+                            </div>
+                            <div>
+                                <div className="text-[10px] text-[#7A5230]">Call Us</div>
+                                <div className="text-xs text-white font-semibold">+91 94373 88224</div>
+                            </div>
+                        </a>
+                        <a
+                            href={`https://wa.me/${HOTEL_INFO.whatsapp}?text=Hi%2C%20I%20would%20like%20to%20book%20a%20room`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[10px] bg-white/5 border border-white/10 text-[#B08050] px-3 py-1.5 rounded-full transition-all active:scale-95 hover:border-[#E8760A]/50 hover:text-[#E8760A]"
+                            className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-3 transition-all active:scale-95 hover:bg-white/10"
                         >
-                            {label} →
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0" style={{ background: 'linear-gradient(135deg, #25D366, #128C7E)' }}>
+                                <WhatsAppIcon />
+                            </div>
+                            <div>
+                                <div className="text-[10px] text-[#7A5230]">WhatsApp</div>
+                                <div className="text-xs text-white font-semibold">Chat with Us</div>
+                            </div>
                         </a>
-                    ))}
+                    </div>
                 </div>
             </div>
 
             {/* Divider */}
-            <div className="h-px mb-4" style={{ background: 'linear-gradient(90deg, transparent, #3D1C00 50%, transparent)' }} />
+            <div className="h-px mb-4 md:mb-6 md:mt-4" style={{ background: 'linear-gradient(90deg, transparent, #3D1C00 50%, transparent)' }} />
 
             {/* Bottom bar: copyright + Made by LogiSaar */}
             <div className="text-center space-y-2">
-                <p className="text-[#4A2C10] text-[9px]">© 2025 Hotel Amruta Bhojana. All rights reserved.</p>
+                <p className="text-[#4A2C10] text-[9px] md:text-xs">© 2025 Hotel Amruta Bhojana. All rights reserved.</p>
 
                 {/* Made by LogiSaar — highlighted credit */}
                 <div className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-4 py-2">
-                    <span className="text-[#7A5230] text-[9px]">Designed &amp; Developed by</span>
+                    <span className="text-[#7A5230] text-[9px] md:text-xs">Designed &amp; Developed by</span>
                     <a
                         href="https://logisaar.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-['Playfair_Display'] text-[11px] font-bold transition-colors hover:opacity-80"
+                        className="font-['Playfair_Display'] text-[11px] md:text-sm font-bold transition-colors hover:opacity-80"
                         style={{ background: 'linear-gradient(135deg, #E8760A, #D4A017)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
                     >
                         LogiSaar
                     </a>
-                    <span className="text-[#D4A017] text-[9px]">✦</span>
+                    <span className="text-[#D4A017] text-[9px] md:text-xs">✦</span>
                 </div>
             </div>
 

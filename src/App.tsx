@@ -2,10 +2,13 @@ import { useEffect } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { SideMenu } from './components/SideMenu';
 import { Footer } from './components/Footer';
+import { OffersBanner } from './components/OffersBanner';
+import { BookNowPopup } from './components/BookNowPopup';
 import { HomePage } from './pages/HomePage';
 import { RoomsPage } from './pages/RoomsPage';
 import { DetailPage } from './pages/DetailPage';
 import { ContactPage } from './pages/ContactPage';
+import { AdminPage } from './pages/AdminPage';
 import { useAppState } from './hooks/useAppState';
 
 function App() {
@@ -69,8 +72,16 @@ function App() {
     document.body.style.background = '#FFFCF7';
   }, []);
 
+  // Admin page has its own full-screen layout
+  if (state.page === 'admin') {
+    return <AdminPage onBack={() => state.setPage('home')} />;
+  }
+
   return (
-    <div className="max-w-[430px] mx-auto min-h-screen bg-[#FFFCF7] shadow-2xl overflow-hidden relative flex flex-col">
+    <div className="w-full max-w-[430px] md:max-w-full mx-auto min-h-screen bg-[#FFFCF7] shadow-2xl md:shadow-none overflow-hidden relative flex flex-col">
+      {/* Offers banner at the very top */}
+      <OffersBanner />
+
       {state.page === 'home' && <HomePage state={state} />}
       {state.page === 'rooms' && <RoomsPage state={state} />}
       {state.page === 'detail' && <DetailPage state={state} />}
@@ -87,6 +98,9 @@ function App() {
           onClose={() => state.setMenuOpen(false)}
         />
       )}
+
+      {/* Book Now popup + Payment modal */}
+      <BookNowPopup />
     </div>
   );
 }

@@ -7,7 +7,7 @@ interface BottomNavProps {
 }
 
 export const BottomNav = ({ page, setPage }: BottomNavProps) => (
-    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white shadow-[0_-4px_20px_rgba(26,10,0,0.08)] pb-5 pt-2 z-50">
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] md:hidden bg-white shadow-[0_-4px_20px_rgba(26,10,0,0.08)] pb-5 pt-2 z-50">
         <div className="flex justify-around items-center">
             {[
                 { id: 'home' as PageId, icon: HomeIcon, label: 'Home' },

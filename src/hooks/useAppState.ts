@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ROOMS, Room } from '../data/constants';
+import { getAllRooms } from '../data/adminStore';
 
-export type PageId = 'home' | 'rooms' | 'detail' | 'contact';
+export type PageId = 'home' | 'rooms' | 'detail' | 'contact' | 'admin';
 
 export function useAppState() {
     const [page, setPage] = useState<PageId>('home');
@@ -14,17 +15,31 @@ export function useAppState() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [activeRoomImg, setActiveRoomImg] = useState<Record<number, number>>({});
 
+    // Check URL hash for admin access
+    useEffect(() => {
+        const checkHash = () => {
+            if (window.location.hash === '#admin') {
+                setPage('admin');
+            }
+        };
+        checkHash();
+        window.addEventListener('hashchange', checkHash);
+        return () => window.removeEventListener('hashchange', checkHash);
+    }, []);
+
     const toggleWishlist = (id: number) => {
         setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
     };
 
+    // Use admin-merged rooms (with price overrides + custom rooms)
     const getFilteredRooms = () => {
-        if (filter === 'All Rooms') return ROOMS;
-        if (filter === 'AC') return ROOMS.filter(r => r.features.includes('Air Conditioning'));
-        if (filter === 'Non-AC') return ROOMS.filter(r => r.type === 'Economy');
-        if (filter === 'Deluxe') return ROOMS.filter(r => r.type === 'Deluxe' || r.type === 'Suite');
-        if (filter === 'Budget') return ROOMS.filter(r => r.price < 2000);
-        return ROOMS;
+        const rooms = getAllRooms();
+        if (filter === 'All Rooms') return rooms;
+        if (filter === 'AC') return rooms.filter(r => r.features.includes('Air Conditioning'));
+        if (filter === 'Non-AC') return rooms.filter(r => r.type === 'Economy');
+        if (filter === 'Deluxe') return rooms.filter(r => r.type === 'Deluxe' || r.type === 'Suite');
+        if (filter === 'Budget') return rooms.filter(r => r.price < 2000);
+        return rooms;
     };
 
     const handleSubmit = () => {
@@ -45,6 +60,12 @@ export function useAppState() {
         if (room) setSelectedRoom(room);
         setPage(p);
         setMenuOpen(false);
+        // Update hash for admin
+        if (p === 'admin') {
+            window.location.hash = '#admin';
+        } else if (window.location.hash === '#admin') {
+            window.location.hash = '';
+        }
     };
 
     return {

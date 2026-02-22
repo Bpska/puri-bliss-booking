@@ -47,20 +47,20 @@ const REVIEWS = [
 ];
 
 export const GoogleReviews = () => (
-    <div className="px-4 mb-6">
+    <div className="px-4 md:px-12 lg:px-20 mb-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
             <div>
                 <div className="flex items-center gap-2 mb-1">
                     <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
-                    <h3 className="font-['Playfair_Display'] text-xl font-bold text-[#1A0A00]">Guest Reviews</h3>
+                    <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Guest Reviews</h3>
                 </div>
                 <div className="flex items-center gap-2 ml-10">
                     <div className="flex gap-0.5 text-[#D4A017]">
                         {[...Array(5)].map((_, i) => <span key={i} className="text-sm">★</span>)}
                     </div>
                     <span className="text-sm font-bold text-[#1A0A00]">4.7</span>
-                    <span className="text-xs text-[#7A5230]">· 318 reviews on Google</span>
+                    <span className="text-xs md:text-sm text-[#7A5230]">· 318 reviews on Google</span>
                 </div>
             </div>
             {/* Google logo badge */}
@@ -77,20 +77,20 @@ export const GoogleReviews = () => (
             </div>
         </div>
 
-        {/* Review cards horizontal scroll */}
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+        {/* Review cards — horizontal scroll on mobile, grid on desktop */}
+        <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible md:mx-0 md:px-0">
             {REVIEWS.map((r, i) => (
-                <div key={i} className="min-w-[270px] bg-white rounded-2xl shadow-sm border border-[#FFE5C0] p-4 flex flex-col gap-3">
+                <div key={i} className="min-w-[270px] md:min-w-0 bg-white rounded-2xl shadow-sm border border-[#FFE5C0] p-4 md:p-5 flex flex-col gap-3 hover:shadow-md transition-shadow">
                     {/* Reviewer */}
                     <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${r.color} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br ${r.color} flex items-center justify-center text-white font-bold text-sm md:text-base flex-shrink-0`}>
                             {r.initials}
                         </div>
                         <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold text-[#1A0A00] truncate">{r.name}</div>
-                            <div className="text-[10px] text-[#7A5230]">{r.location}</div>
+                            <div className="text-sm md:text-base font-semibold text-[#1A0A00] truncate">{r.name}</div>
+                            <div className="text-[10px] md:text-xs text-[#7A5230]">{r.location}</div>
                         </div>
-                        <div className="text-[10px] text-[#7A5230] flex-shrink-0">{r.date}</div>
+                        <div className="text-[10px] md:text-xs text-[#7A5230] flex-shrink-0">{r.date}</div>
                     </div>
                     {/* Stars */}
                     <div className="flex gap-0.5">
@@ -99,7 +99,7 @@ export const GoogleReviews = () => (
                         ))}
                     </div>
                     {/* Text */}
-                    <p className="text-xs text-[#7A5230] leading-relaxed line-clamp-4 font-['Playfair_Display'] italic">"{r.text}"</p>
+                    <p className="text-xs md:text-sm text-[#7A5230] leading-relaxed line-clamp-4 font-['Playfair_Display'] italic">"{r.text}"</p>
                 </div>
             ))}
         </div>
@@ -109,7 +109,7 @@ export const GoogleReviews = () => (
             href="https://maps.app.goo.gl/H5oPZFBCsP61fxqNA"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 flex items-center justify-center gap-2 w-full py-3 px-4 bg-white rounded-xl border border-[#FFE5C0] font-semibold text-sm text-[#1A0A00] shadow-sm transition-transform active:scale-95"
+            className="mt-4 flex items-center justify-center gap-2 w-full md:w-auto md:inline-flex py-3 px-4 md:px-8 bg-white rounded-xl border border-[#FFE5C0] font-semibold text-sm md:text-base text-[#1A0A00] shadow-sm transition-all active:scale-95 hover:shadow-md"
         >
             <svg height="18" viewBox="0 0 74 24" width="50" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8.49 10.26v2.478h5.94c-.24 1.37-.9 2.53-1.92 3.31-1.02.77-2.32 1.21-4.02 1.21-3.2 0-5.8-2.62-5.8-5.82s2.6-5.82 5.8-5.82c1.73 0 2.99.68 3.91 1.55l1.75-1.75C12.92 4.31 11.14 3.5 8.49 3.5c-4.42 0-8 3.58-8 8s3.58 8 8 8c2.34 0 4.1-.77 5.47-2.2 1.41-1.41 1.85-3.4 1.85-5.01 0-.5-.04-.96-.11-1.03H8.49z" fill="#4285F4" />
