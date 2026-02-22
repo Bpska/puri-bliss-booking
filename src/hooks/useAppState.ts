@@ -60,6 +60,11 @@ export function useAppState() {
         if (room) setSelectedRoom(room);
         setPage(p);
         setMenuOpen(false);
+        // Scroll to top on every page navigation
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        // Also reset any scrollable container in the app
+        const scrollEl = document.querySelector('.overflow-y-auto');
+        if (scrollEl) scrollEl.scrollTop = 0;
         // Update hash for admin
         if (p === 'admin') {
             window.location.hash = '#admin';

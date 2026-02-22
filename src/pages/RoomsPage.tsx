@@ -29,7 +29,7 @@ export const RoomsPage = ({ state }: RoomsPageProps) => {
                 <div className="absolute bottom-0 left-0 right-0 h-8 bg-[#FFFCF7] rounded-t-3xl" />
             </div>
 
-            <div className="px-4 md:px-12 lg:px-20 -mt-4 mb-5">
+            <div className="px-4 md:px-12 lg:px-20 mt-4 mb-5">
                 {/* Scrollable pill filter */}
                 <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
                     {[

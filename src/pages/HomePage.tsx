@@ -110,7 +110,7 @@ export const HomePage = ({ state }: HomePageProps) => {
             </div>
 
             {/* Booking card */}
-            <div className="px-4 md:px-12 lg:px-20 -mt-7 mb-6">
+            <div className="px-4 md:px-12 lg:px-20 mt-4 mb-6">
                 <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 md:max-w-xl">
                     <div className="grid grid-cols-2 gap-3 mb-3">
                         <div><label className="text-xs md:text-sm text-[#7A5230] mb-1 block">Check-in</label><div className="text-sm md:text-base font-semibold text-[#1A0A00]">20 Feb 2025</div></div>
