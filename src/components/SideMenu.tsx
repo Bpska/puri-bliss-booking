@@ -27,6 +27,7 @@ export const SideMenu = ({ page, setPage, onClose }: SideMenuProps) => (
                     { id: 'rooms' as PageId, label: '🛏️ Rooms & Tariff' },
                     { id: 'detail' as PageId, label: '📅 Book Now' },
                     { id: 'contact' as PageId, label: '✉️ Contact Us' },
+                    { id: 'admin' as PageId, label: '🔐 Admin Console' },
                 ].map(item => (
                     <button
                         key={item.id}

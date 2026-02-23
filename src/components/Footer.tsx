@@ -55,7 +55,7 @@ export const Footer = () => (
                         {[
                             { label: 'Google Maps', href: HOTEL_INFO.maps },
                             { label: 'Book on Agoda', href: HOTEL_INFO.agoda },
-                            { label: 'Website', href: HOTEL_INFO.website },
+                            { label: 'Admin Panel', href: '#admin' },
                         ].map(({ label, href }) => (
                             <a
                                 key={label}

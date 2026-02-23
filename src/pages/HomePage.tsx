@@ -502,17 +502,23 @@ export const HomePage = ({ state }: HomePageProps) => {
                 <p className="text-xs md:text-sm text-[#7A5230] mb-4 ml-10">Explore Puri and beyond</p>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     {NEARBY_ATTRACTIONS.map((a, i) => (
-                        <div
+                        <a
                             key={i}
-                            className={`rounded-2xl p-4 md:p-5 text-center shadow-sm border transition-all hover:shadow-md hover:-translate-y-0.5 ${a.highlight
+                            href={a.mapLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`rounded-2xl p-4 md:p-5 text-center shadow-sm border transition-all hover:shadow-md hover:-translate-y-0.5 active:scale-95 group ${a.highlight
                                 ? 'bg-gradient-to-br from-[#FFF2E0] to-[#FFFCF7] border-[#E8760A]/30'
-                                : 'bg-white border-[#FFE5C0]'
+                                : 'bg-white border-[#FFE5C0] hover:border-[#E8760A]/30'
                                 }`}
                         >
-                            <div className="text-2xl md:text-3xl mb-2">{a.icon}</div>
+                            <div className="text-2xl md:text-3xl mb-2 flex flex-col items-center">
+                                <span>{a.icon}</span>
+                                <span className="text-[8px] md:text-[10px] uppercase font-bold text-[#E8760A] opacity-0 group-hover:opacity-100 transition-opacity mt-1">Open Map</span>
+                            </div>
                             <div className="text-xs md:text-sm font-bold text-[#1A0A00] mb-1 leading-snug">{a.name}</div>
                             <div className="inline-block bg-[#FFF2E0] text-[#E8760A] text-[10px] md:text-xs px-2 py-0.5 rounded-full font-semibold">{a.distance}</div>
-                        </div>
+                        </a>
                     ))}
                 </div>
             </div>
@@ -525,13 +531,22 @@ export const HomePage = ({ state }: HomePageProps) => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {HOW_TO_REACH.map((h, i) => (
-                        <div key={i} className="bg-white rounded-xl shadow-sm border border-[#FFE5C0] p-4 flex items-center gap-3 hover:shadow-md transition-shadow">
-                            <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF2E0] rounded-lg flex items-center justify-center text-xl flex-shrink-0">{h.icon}</div>
+                        <a
+                            key={i}
+                            href={h.mapLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white rounded-xl shadow-sm border border-[#FFE5C0] p-4 flex items-center gap-3 hover:shadow-md transition-all active:scale-95 group"
+                        >
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF2E0] rounded-lg flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-[#E8760A]/10 transition-colors">{h.icon}</div>
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm md:text-base font-semibold text-[#1A0A00] truncate">{h.name}</div>
+                                <div className="text-sm md:text-base font-semibold text-[#1A0A00] truncate group-hover:text-[#E8760A] transition-colors">{h.name}</div>
                                 <div className="text-xs md:text-sm text-[#E8760A] font-medium">{h.distance}</div>
                             </div>
-                        </div>
+                            <div className="text-[#E8760A] opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                            </div>
+                        </a>
                     ))}
                 </div>
             </div>
