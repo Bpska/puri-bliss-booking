@@ -13,13 +13,19 @@ export { default as hero1 } from '../images/IMG-20260220-WA0006.jpg';
 export { default as hero2 } from '../images/IMG-20260220-WA0007.jpg';
 export { default as hero3 } from '../images/IMG-20260220-WA0008.jpg';
 export { default as hero4 } from '../images/IMG-20260220-WA0009.jpg';
+export { default as hero5 } from '../images/hero-night-exterior.jpg';
+export { default as hero6 } from '../images/hero-night-sign.png';
+export { default as hero7 } from '../images/hero-day-exterior.jpg';
 
 import hero1 from '../images/IMG-20260220-WA0006.jpg';
 import hero2 from '../images/IMG-20260220-WA0007.jpg';
 import hero3 from '../images/IMG-20260220-WA0008.jpg';
 import hero4 from '../images/IMG-20260220-WA0009.jpg';
+import hero5 from '../images/hero-night-exterior.jpg';
+import hero6 from '../images/hero-night-sign.png';
+import hero7 from '../images/hero-day-exterior.jpg';
 
-export const HERO_IMAGES = [hero1, hero2, hero3, hero4];
+export const HERO_IMAGES = [hero1, hero2, hero3, hero4, hero5, hero6, hero7];
 
 // Room image imports
 import deluxeAc1 from '../images/room-deluxe-ac-1.jpg';
@@ -73,7 +79,7 @@ export const ROOMS: Room[] = [
         desc: 'A comfortable Deluxe Double Bed AC Room with city views, offering a peaceful stay just 100 meters from the Jagannath Temple. 130 sq.ft of well-appointed space with modern amenities.',
         gradient: 'linear-gradient(135deg,#1A0A00,#5C2A00,#E8760A)',
         images: [deluxeAc1, deluxeAc2, deluxeAc3, deluxeAc4],
-        includes: ['Free WiFi', 'Daily Housekeeping', 'CCTV Security', 'Free Cancellation', '24hr Room Service'],
+        includes: ['Free WiFi', 'Daily Housekeeping', 'CCTV Security', '24hr Room Service'],
     },
     {
         id: 2, name: 'Standard AC Room', type: 'Standard', tag: null,
@@ -82,7 +88,7 @@ export const ROOMS: Room[] = [
         desc: 'Ideal for solo travelers and couples. Clean, affordable and well-located near Jagannath Temple. Equipped with AC, attached bath with geyser, and free WiFi.',
         gradient: 'linear-gradient(135deg,#0A1A00,#2A5C00,#70A030)',
         images: [standardAc1, standardAc2, standardAc3, standardAc4],
-        includes: ['Free WiFi', 'Daily Housekeeping', 'CCTV Security', 'Free Cancellation', '24hr Room Service'],
+        includes: ['Free WiFi', 'Daily Housekeeping', 'CCTV Security', '24hr Room Service'],
     },
     {
         id: 3, name: 'Economy Non-AC Room', type: 'Economy', tag: null,
@@ -91,7 +97,7 @@ export const ROOMS: Room[] = [
         desc: 'Perfect for budget pilgrims. Clean, safe and simple stay at the most affordable price in Puri. Located just 100 meters from Jagannath Temple.',
         gradient: 'linear-gradient(135deg,#00101A,#004060,#0080C0)',
         images: [economyNonAc1, economyNonAc2, economyNonAc3],
-        includes: ['Daily Housekeeping', 'CCTV Security', 'Free Cancellation', '24hr Room Service'],
+        includes: ['Daily Housekeeping', 'CCTV Security', '24hr Room Service'],
     },
     {
         id: 4, name: 'Family Suite', type: 'Suite', tag: 'Most Popular',
@@ -100,7 +106,7 @@ export const ROOMS: Room[] = [
         desc: 'Spacious suite perfect for families visiting for Jagannath Darshan. Two beds, private bath with geyser and seating area. 24-hour room service available.',
         gradient: 'linear-gradient(135deg,#1A0A20,#5A1A60,#A030B0)',
         images: [familySuite1, familySuite2, familySuite3, familySuite4],
-        includes: ['Free WiFi', 'Daily Housekeeping', 'CCTV Security', 'Free Cancellation', '24hr Room Service', 'Extra Bed on Request'],
+        includes: ['Free WiFi', 'Daily Housekeeping', 'CCTV Security', '24hr Room Service', 'Extra Bed on Request'],
     },
 ];
 

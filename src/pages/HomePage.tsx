@@ -263,7 +263,7 @@ export const HomePage = ({ state }: HomePageProps) => {
                 <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 border-2 border-white/10 rounded-full -mr-10 -mt-10" />
                 <div className="relative">
                     <div className="inline-block bg-[#D4A017]/20 border border-[#D4A017]/30 text-[#D4A017] text-xs md:text-sm px-3 py-1 rounded-full mb-3">✦ Special Offer · Agoda</div>
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-3 leading-tight">Free Cancellation Available</h3>
+                    <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-3 leading-tight">Book Your Stay Today</h3>
                     <div className="flex items-center gap-3 md:gap-5">
                         <button
                             onClick={() => setPage('detail', ROOMS[0])}
@@ -422,7 +422,7 @@ export const HomePage = ({ state }: HomePageProps) => {
                 <div className="relative">
                     <div className="inline-block bg-[#D4A017]/20 border border-[#D4A017]/30 text-[#D4A017] text-xs md:text-sm px-3 py-1 rounded-full mb-3">✦ Book Your Stay</div>
                     <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-2 leading-tight">Available on All Platforms</h3>
-                    <p className="text-white/60 text-xs md:text-sm mb-4">Free cancellation available on most bookings</p>
+                    <p className="text-white/60 text-xs md:text-sm mb-4">Book with confidence through your preferred partner</p>
                     <div className="flex flex-wrap gap-2 md:gap-3">
                         {BOOKING_PLATFORMS.map((bp, i) => (
                             <a
