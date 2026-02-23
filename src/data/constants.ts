@@ -164,12 +164,11 @@ export const POLICIES = [
 
 // Cancellation Policy
 export const CANCELLATION_POLICY = [
-    'Booking amount is non-refundable.',
-    'No cancellation within 24 hours of check-in.',
-    'The amount can be used within 60 days, as per availability of rooms and tariff.',
-    'Partial cancellation is applicable only if informed before 24 hours.',
-    'After deducting one day\'s booking amount, the balance will be refunded to your account.',
-    'The non-refundable amount can be reused within 60 days.',
+    'Reservation payments are strictly non-refundable.',
+    'Cancellations or modifications must be requested at least 24 hours prior to scheduled check-in.',
+    'For cancellations made at least 24 hours in advance, the balance (less a one-day room charge) will be credited for your future use.',
+    'Credit validity is 60 days from the date of the original reservation, subject to room availability and current seasonal tariffs.',
+    'No modifications, credits, or refunds will be issued for cancellations made within 24 hours of scheduled check-in.',
 ];
 
 // Dining Information
@@ -206,8 +205,16 @@ export const NEARBY_ATTRACTIONS = [
     { name: 'Puri Lighthouse Point', distance: '2 km', icon: '🗼' },
     { name: 'Gundicha Temple', distance: '3 km', icon: '🛕' },
     { name: 'Konark Sun Temple', distance: '32 km', icon: '🏛️' },
+    { name: 'Ramchandi Temple', distance: '35 km', icon: '🛕' },
+    { name: 'Chandrabhaga Beach', distance: '35 km', icon: '🏖️' },
     { name: 'Chilka Lake', distance: '45 km', icon: '🦩' },
+    { name: 'Lingraj Temple', distance: '65 km', icon: '🛕' },
+    { name: 'Dhauli Shanti Stupa', distance: '65 km', icon: '☸️' },
+    { name: 'Khandagiri Cave', distance: '70 km', icon: '🏔️' },
+    { name: 'Udaya Giri Cave', distance: '70 km', icon: '🏔️' },
     { name: 'Nandankanan Zoo', distance: '75 km', icon: '🦁' },
+    { name: 'Kalijai Temple', distance: '109 km', icon: '🛕' },
+    { name: 'Biraja Temple Jajpur (Shakti Peeth)', distance: '160 km', icon: '🛕' },
 ];
 
 // How to Reach

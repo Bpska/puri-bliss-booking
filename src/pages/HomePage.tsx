@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Heart, Phone, X } from 'lucide-react';
+import { Heart, Phone, X, AlertTriangle } from 'lucide-react';
 import { AnimatedImage } from '../components/AnimatedImage';
 import { ROOMS, AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooftop, HERO_IMAGES, POLICIES, DINING, BOOKING_PLATFORMS, NEARBY_ATTRACTIONS, HOW_TO_REACH, CANCELLATION_POLICY } from '../data/constants';
 import { GoogleReviews } from '../components/GoogleReviews';
 import { useAppState } from '../hooks/useAppState';
+import { BookingFormModal } from '../components/BookingFormModal';
+import { getRoomsFull, getTotalRooms, getFullRooms } from '../data/adminStore';
+import { Room } from '../data/constants';
 
 interface HomePageProps {
     state: ReturnType<typeof useAppState>;
@@ -13,6 +16,19 @@ export const HomePage = ({ state }: HomePageProps) => {
     const { setPage, wishlist, toggleWishlist, filter, setFilter, getFilteredRooms, setMenuOpen } = state;
     const [selectedImage, setSelectedImage] = useState<{ src: string, label: string } | null>(null);
     const [heroIdx, setHeroIdx] = useState(0);
+    const [bookingRoom, setBookingRoom] = useState<Room | null>(null);
+    const [roomsFull, setRoomsFull] = useState(false);
+    const [availableCount, setAvailableCount] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fullOverride = getRoomsFull();
+        const total = getTotalRooms();
+        const occupied = getFullRooms();
+        const available = total - occupied;
+
+        setRoomsFull(fullOverride || available <= 0);
+        setAvailableCount(available);
+    }, []);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -23,6 +39,29 @@ export const HomePage = ({ state }: HomePageProps) => {
 
     return (
         <div className="animate-fadeUp overflow-y-auto pb-20 md:pb-6">
+
+            {/* All Rooms Full/Availability Banner */}
+            {roomsFull ? (
+                <div className="bg-gradient-to-r from-red-900 via-red-800 to-red-900 border-b border-red-700">
+                    <div className="px-4 md:px-12 lg:px-20 py-3 flex items-center justify-center gap-3">
+                        <AlertTriangle size={18} className="text-red-300 flex-shrink-0" />
+                        <p className="text-sm md:text-base font-bold text-white uppercase tracking-wider">Rooms Sold Out — Bookings Closed</p>
+                        <AlertTriangle size={18} className="text-red-300 flex-shrink-0" />
+                    </div>
+                </div>
+            ) : availableCount !== null && availableCount <= 3 ? (
+                <div className="bg-gradient-to-r from-[#E8760A] via-[#F59820] to-[#E8760A] border-b border-[#3D1C00]/20">
+                    <div className="px-4 md:px-12 lg:px-20 py-3 flex items-center justify-center gap-3">
+                        <div className="flex items-center justify-center w-6 h-6 bg-white/20 rounded-full animate-bounce">
+                            <AlertTriangle size={14} className="text-white" />
+                        </div>
+                        <p className="text-sm md:text-base font-bold text-[#1A0A00]">Hurry! Only {availableCount} Rooms Left Available — Book Now!</p>
+                        <div className="flex items-center justify-center w-6 h-6 bg-white/20 rounded-full animate-bounce">
+                            <AlertTriangle size={14} className="text-white" />
+                        </div>
+                    </div>
+                </div>
+            ) : null}
 
             {/* Hero */}
             <div className="relative min-h-[360px] md:min-h-[520px] lg:min-h-[600px] overflow-hidden bg-[#1A0A00]">
@@ -174,16 +213,24 @@ export const HomePage = ({ state }: HomePageProps) => {
                                         <span className="font-['Playfair_Display'] text-lg md:text-xl font-bold text-[#3D1C00]">₹{room.price}</span>
                                         <span className="text-[10px] md:text-xs text-[#7A5230]">/night</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-[#D4A017] text-xs">★</span>
-                                        <span className="text-xs font-semibold text-[#1A0A00]">{room.rating}</span>
-                                    </div>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); setBookingRoom(room); }}
+                                        className="bg-[#E8760A] text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-lg hover:shadow-md active:scale-95 transition-all"
+                                    >
+                                        Book Now
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
+
+            <BookingFormModal
+                room={bookingRoom}
+                isOpen={!!bookingRoom}
+                onClose={() => setBookingRoom(null)}
+            />
 
             {/* Photo Gallery */}
             <div className="px-4 md:px-12 lg:px-20 mb-6">
@@ -210,34 +257,36 @@ export const HomePage = ({ state }: HomePageProps) => {
             </div>
 
             {/* Full-screen Lightbox */}
-            {selectedImage && (
-                <div
-                    className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-fadeIn"
-                    onClick={() => setSelectedImage(null)}
-                >
-                    <button
-                        className="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white transition-transform active:scale-90 hover:bg-white/20"
-                        onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
-                    >
-                        <X size={24} />
-                    </button>
-
+            {
+                selectedImage && (
                     <div
-                        className="relative max-w-full md:max-w-3xl max-h-[80vh] overflow-hidden rounded-2xl shadow-2xl animate-fadeUp"
-                        onClick={(e) => e.stopPropagation()}
+                        className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-fadeIn"
+                        onClick={() => setSelectedImage(null)}
                     >
-                        <img
-                            src={selectedImage.src}
-                            alt={selectedImage.label}
-                            className="w-full h-full object-contain animate-fadeIn"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                            <h4 className="text-white font-['Playfair_Display'] text-xl font-semibold mb-1">{selectedImage.label}</h4>
-                            <p className="text-white/70 text-sm">Hotel Amruta Bhojana, Puri</p>
+                        <button
+                            className="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white transition-transform active:scale-90 hover:bg-white/20"
+                            onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
+                        >
+                            <X size={24} />
+                        </button>
+
+                        <div
+                            className="relative max-w-full md:max-w-3xl max-h-[80vh] overflow-hidden rounded-2xl shadow-2xl animate-fadeUp"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <img
+                                src={selectedImage.src}
+                                alt={selectedImage.label}
+                                className="w-full h-full object-contain animate-fadeIn"
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                                <h4 className="text-white font-['Playfair_Display'] text-xl font-semibold mb-1">{selectedImage.label}</h4>
+                                <p className="text-white/70 text-sm">Hotel Amruta Bhojana, Puri</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Rooftop Garden Highlight */}
             <div className="px-4 md:px-12 lg:px-20 mb-6">
@@ -489,6 +538,6 @@ export const HomePage = ({ state }: HomePageProps) => {
 
             {/* Google Reviews */}
             <GoogleReviews />
-        </div>
+        </div >
     );
 };

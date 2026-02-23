@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { PaymentModal } from './PaymentModal';
-import { hotelLogo } from '../data/constants';
+import { BookingFormModal } from './BookingFormModal';
+import { hotelLogo, ROOMS } from '../data/constants';
 
 export const BookNowPopup = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [dismissed, setDismissed] = useState(false);
-    const [showPayment, setShowPayment] = useState(false);
+    const [showBooking, setShowBooking] = useState(false);
     const [animState, setAnimState] = useState<'hidden' | 'entering' | 'visible' | 'exiting'>('hidden');
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export const BookNowPopup = () => {
 
     const handleBookNow = () => {
         dismissPopup();
-        setTimeout(() => setShowPayment(true), 350);
+        setTimeout(() => setShowBooking(true), 350);
     };
 
     return (
@@ -111,7 +111,14 @@ export const BookNowPopup = () => {
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                             </button>
 
-                            <p className="text-center text-[10px] text-[#7A5230]/60 mt-3">
+                            <button
+                                onClick={dismissPopup}
+                                className="w-full mt-2 py-2 text-xs font-semibold text-[#7A5230]/60 hover:text-[#7A5230] transition-colors"
+                            >
+                                Maybe later, thanks
+                            </button>
+
+                            <p className="text-center text-[10px] text-[#7A5230]/60 mt-2">
                                 Pay via UPI (PhonePe, GPay) or Bank Transfer
                             </p>
                         </div>
@@ -119,10 +126,11 @@ export const BookNowPopup = () => {
                 </div>
             )}
 
-            {/* Payment Modal */}
-            <PaymentModal
-                isOpen={showPayment}
-                onClose={() => setShowPayment(false)}
+            {/* Booking Form Modal */}
+            <BookingFormModal
+                room={ROOMS[0]} // Default to first room for the general popup
+                isOpen={showBooking}
+                onClose={() => setShowBooking(false)}
             />
         </>
     );

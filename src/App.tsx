@@ -66,6 +66,17 @@ function App() {
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite linear;
       }
+      .custom-scrollbar::-webkit-scrollbar {
+        display: block;
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #FFF2E0;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #E8760A;
+        border-radius: 10px;
+      }
     `;
     document.head.appendChild(style);
     document.body.style.fontFamily = "'DM Sans', sans-serif";
