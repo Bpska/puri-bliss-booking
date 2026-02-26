@@ -5,7 +5,7 @@ import { ROOMS, AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooft
 import { GoogleReviews } from '../components/GoogleReviews';
 import { useAppState } from '../hooks/useAppState';
 import { BookingFormModal } from '../components/BookingFormModal';
-import { getRoomsFull, getTotalRooms, getFullRooms } from '../data/adminStore';
+import { getSettings } from '../data/adminStore';
 import { Room } from '../data/constants';
 
 interface HomePageProps {
@@ -21,13 +21,14 @@ export const HomePage = ({ state }: HomePageProps) => {
     const [availableCount, setAvailableCount] = useState<number | null>(null);
 
     useEffect(() => {
-        const fullOverride = getRoomsFull();
-        const total = getTotalRooms();
-        const occupied = getFullRooms();
-        const available = total - occupied;
-
-        setRoomsFull(fullOverride || available <= 0);
-        setAvailableCount(available);
+        getSettings().then(s => {
+            const available = s.total_rooms - s.full_rooms;
+            setRoomsFull(s.rooms_full || available <= 0);
+            setAvailableCount(available);
+        }).catch(() => {
+            setRoomsFull(false);
+            setAvailableCount(null);
+        });
     }, []);
 
     useEffect(() => {
@@ -311,7 +312,6 @@ export const HomePage = ({ state }: HomePageProps) => {
             <div className="mx-4 md:mx-12 lg:mx-20 mb-6 p-5 md:p-8 rounded-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
                 <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 border-2 border-white/10 rounded-full -mr-10 -mt-10" />
                 <div className="relative">
-                    <div className="inline-block bg-[#D4A017]/20 border border-[#D4A017]/30 text-[#D4A017] text-xs md:text-sm px-3 py-1 rounded-full mb-3">✦ Special Offer · Agoda</div>
                     <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-3 leading-tight">Book Your Stay Today</h3>
                     <div className="flex items-center gap-3 md:gap-5">
                         <button
@@ -469,7 +469,6 @@ export const HomePage = ({ state }: HomePageProps) => {
             <div className="mx-4 md:mx-12 lg:mx-20 mb-6 p-5 md:p-8 rounded-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
                 <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 border-2 border-white/10 rounded-full -mr-10 -mt-10" />
                 <div className="relative">
-                    <div className="inline-block bg-[#D4A017]/20 border border-[#D4A017]/30 text-[#D4A017] text-xs md:text-sm px-3 py-1 rounded-full mb-3">✦ Book Your Stay</div>
                     <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-2 leading-tight">Available on All Platforms</h3>
                     <p className="text-white/60 text-xs md:text-sm mb-4">Book with confidence through your preferred partner</p>
                     <div className="flex flex-wrap gap-2 md:gap-3">

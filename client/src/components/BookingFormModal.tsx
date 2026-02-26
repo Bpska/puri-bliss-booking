@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Phone } from 'lucide-react';
 import { Room, ROOMS, CANCELLATION_POLICY } from '../data/constants';
-import { addBooking, getRoomsFull, getTotalRooms, getFullRooms } from '../data/adminStore';
+import { createBooking, getSettings, Settings } from '../data/adminStore';
 import { PaymentModal } from './PaymentModal';
 
 interface BookingFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     room: Room | null;
+    checkIn?: string;
+    checkOut?: string;
+    guests?: number;
 }
 
-export const BookingFormModal = ({ isOpen, onClose, room }: BookingFormModalProps) => {
+export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, guests }: BookingFormModalProps) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -19,11 +22,18 @@ export const BookingFormModal = ({ isOpen, onClose, room }: BookingFormModalProp
     const [currentRoom, setCurrentRoom] = useState<Room | null>(room);
     const [submitted, setSubmitted] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
+    const [roomsFull, setRoomsFull] = useState(false);
 
-    // Check both manual occupancy and override toggle
-    const total = getTotalRooms();
-    const occupied = getFullRooms();
-    const roomsFull = getRoomsFull() || (total - occupied <= 0);
+    // Load availability from backend settings
+    useEffect(() => {
+        getSettings().then((s: Settings) => {
+            const full = s.rooms_full || (s.total_rooms - s.full_rooms <= 0);
+            setRoomsFull(full);
+        }).catch(() => {
+            // If backend unavailable, assume rooms available
+            setRoomsFull(false);
+        });
+    }, []);
 
     useEffect(() => {
         if (room) setCurrentRoom(room);
@@ -46,17 +56,24 @@ export const BookingFormModal = ({ isOpen, onClose, room }: BookingFormModalProp
         );
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        addBooking({
-            roomId: currentRoom.id,
-            roomName: currentRoom.name,
-            userName: formData.name,
-            userEmail: formData.email,
-            userPhone: formData.phone,
-        });
+        try {
+            await createBooking({
+                roomId: currentRoom!.id,
+                roomName: currentRoom!.name,
+                userName: formData.name,
+                userEmail: formData.email,
+                userPhone: formData.phone,
+                checkIn: checkIn,
+                checkOut: checkOut,
+                guests: guests,
+            });
+        } catch {
+            // If backend unavailable, still show success UX
+            console.warn('Could not save booking to server, continuing...');
+        }
         setSubmitted(true);
-        // After 1.5 seconds, show payment instead of just closing
         setTimeout(() => {
             setShowPayment(true);
         }, 1500);
@@ -120,6 +137,15 @@ export const BookingFormModal = ({ isOpen, onClose, room }: BookingFormModalProp
                                     <div className="text-sm font-bold text-[#1A0A00]">{currentRoom.type} Suite</div>
                                     <div className="text-[#E8760A] font-bold text-sm">₹{currentRoom.price}/night</div>
                                 </div>
+                                {checkIn && checkOut && (
+                                    <div className="flex justify-between items-center bg-white/60 p-2 rounded-lg mb-2 border border-[#FFE5C0]/50">
+                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Check-in</div><div className="text-[#1A0A00] font-semibold">{checkIn}</div></div>
+                                        <div className="text-[#E8760A] text-xs font-bold">→</div>
+                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Check-out</div><div className="text-[#1A0A00] font-semibold">{checkOut}</div></div>
+                                        <div className="border-l border-[#FFE5C0] h-6 mx-1"></div>
+                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Guests</div><div className="text-[#1A0A00] font-semibold">{guests || 1}</div></div>
+                                    </div>
+                                )}
                                 <div className="flex flex-wrap gap-2">
                                     {currentRoom.features.slice(0, 3).map((f, i) => (
                                         <span key={i} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#FFE5C0] text-[#7A5230]">{f}</span>

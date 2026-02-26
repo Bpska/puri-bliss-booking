@@ -111,9 +111,11 @@ function App() {
       )}
 
       {/* Book Now popup + Payment modal */}
-      <BookNowPopup />
+      <BookNowPopup state={state} />
     </div>
   );
 }
 
 export default App;
+
+

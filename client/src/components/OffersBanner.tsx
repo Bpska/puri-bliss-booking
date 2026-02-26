@@ -5,10 +5,10 @@ export const OffersBanner = () => {
     const [offers, setOffers] = useState<Offer[]>([]);
 
     useEffect(() => {
-        // Read offers and refresh every 2 seconds (in case admin updates)
-        const load = () => setOffers(getActiveOffers());
+        // Load once on mount, then refresh every 30 seconds
+        const load = () => getActiveOffers().then(setOffers).catch(() => { });
         load();
-        const interval = setInterval(load, 2000);
+        const interval = setInterval(load, 30000);
         return () => clearInterval(interval);
     }, []);
 

@@ -19,7 +19,6 @@ export const ContactPage = ({ state }: ContactPageProps) => {
 
             <div className="relative min-h-[180px] md:min-h-[240px] overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
                 <div className="relative z-10 px-5 py-6 md:px-12 lg:px-20 md:py-10">
-                    <div className="inline-block bg-[#D4A017]/20 border border-[#D4A017]/30 text-[#D4A017] text-xs md:text-sm px-3 py-1 rounded-full mb-3">Get in Touch</div>
                     <h1 className="font-['Playfair_Display'] text-2xl md:text-4xl font-semibold text-white mb-2">Contact &amp; About Us</h1>
                     <p className="text-white/70 text-sm md:text-base">We're here to help with your divine journey</p>
                 </div>

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: puri_bliss_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: bps
+      POSTGRES_DB: hotel_amruta
+    ports:
+      - "5430:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: puri_bliss_backend
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "5001:5000"
+    environment:
+      # These override the .env file locally because in Docker, localhost implies the container itself.
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=hotel_amruta
+      - DB_USER=postgres
+      - DB_PASSWORD=bps
+      # For authentication tokens
+      - JWT_SECRET=hotel_amruta_super_secret_key_2024
+      - ADMIN_USERNAME=bps
+      - ADMIN_PASSWORD=bps
+      # Cross origin requests
+      - FRONTEND_URL=http://localhost:8080
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: puri_bliss_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80" # Maps the host port 8080 to the container's Nginx port 80
+
+volumes:
+  postgres_data:

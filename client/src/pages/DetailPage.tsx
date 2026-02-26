@@ -139,8 +139,25 @@ export const DetailPage = ({ state }: DetailPageProps) => {
                             <h2 className="font-['Playfair_Display'] text-lg md:text-xl font-semibold text-[#1A0A00] mb-3">Select Your Stay</h2>
                             <div className="bg-white rounded-xl border border-[#FFE5C0] p-4 mb-3">
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div><label className="text-xs md:text-sm text-[#7A5230] mb-1 block">Check-in</label><div className="text-sm md:text-base font-semibold text-[#1A0A00]">20 Feb 2025</div></div>
-                                    <div><label className="text-xs md:text-sm text-[#7A5230] mb-1 block">Check-out</label><div className="text-sm md:text-base font-semibold text-[#1A0A00]">21 Feb 2025</div></div>
+                                    <div>
+                                        <label className="text-xs md:text-sm text-[#7A5230] mb-1 block">Check-in</label>
+                                        <input
+                                            type="date"
+                                            value={state.checkIn}
+                                            onChange={(e) => state.setCheckIn(e.target.value)}
+                                            className="w-full bg-transparent text-sm md:text-base font-semibold text-[#1A0A00] focus:outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs md:text-sm text-[#7A5230] mb-1 block">Check-out</label>
+                                        <input
+                                            type="date"
+                                            value={state.checkOut}
+                                            onChange={(e) => state.setCheckOut(e.target.value)}
+                                            min={state.checkIn}
+                                            className="w-full bg-transparent text-sm md:text-base font-semibold text-[#1A0A00] focus:outline-none"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                             <div className="bg-white rounded-xl border border-[#FFE5C0] p-4">
@@ -207,6 +224,9 @@ export const DetailPage = ({ state }: DetailPageProps) => {
                 room={selectedRoom}
                 isOpen={showBooking}
                 onClose={() => setShowBooking(false)}
+                checkIn={state.checkIn}
+                checkOut={state.checkOut}
+                guests={state.guests}
             />
 
             {/* Fixed bottom bar — mobile only */}

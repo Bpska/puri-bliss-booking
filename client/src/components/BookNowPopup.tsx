@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { BookingFormModal } from './BookingFormModal';
 import { hotelLogo, ROOMS } from '../data/constants';
+import { useAppState } from '../hooks/useAppState';
 
-export const BookNowPopup = () => {
+export const BookNowPopup = ({ state }: { state: ReturnType<typeof useAppState> }) => {
     const [showPopup, setShowPopup] = useState(false);
     const [dismissed, setDismissed] = useState(false);
     const [showBooking, setShowBooking] = useState(false);
@@ -131,6 +132,9 @@ export const BookNowPopup = () => {
                 room={ROOMS[0]} // Default to first room for the general popup
                 isOpen={showBooking}
                 onClose={() => setShowBooking(false)}
+                checkIn={state.checkIn}
+                checkOut={state.checkOut}
+                guests={state.guests}
             />
         </>
     );
