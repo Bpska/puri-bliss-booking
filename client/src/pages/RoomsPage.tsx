@@ -95,9 +95,6 @@ export const RoomsPage = ({ state }: RoomsPageProps) => {
 
                                 <div className="absolute top-3 left-3 flex gap-2 pointer-events-none">
                                     <span className="bg-white/20 backdrop-blur-sm border border-white/30 text-white text-[10px] md:text-xs px-2.5 py-1 rounded-full">{room.type}</span>
-                                    {room.tag && (
-                                        <span className="bg-[#D4A017]/80 backdrop-blur-sm border border-[#D4A017] text-white text-[10px] md:text-xs px-2.5 py-1 rounded-full font-medium">✦ {room.tag}</span>
-                                    )}
                                 </div>
 
                                 <button

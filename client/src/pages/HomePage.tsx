@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Heart, Phone, X, AlertTriangle } from 'lucide-react';
 import { AnimatedImage } from '../components/AnimatedImage';
 import { ROOMS, AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooftop, HERO_IMAGES, POLICIES, DINING, BOOKING_PLATFORMS, NEARBY_ATTRACTIONS, HOW_TO_REACH, CANCELLATION_POLICY } from '../data/constants';
@@ -7,6 +7,7 @@ import { useAppState } from '../hooks/useAppState';
 import { BookingFormModal } from '../components/BookingFormModal';
 import { getSettings } from '../data/adminStore';
 import { Room } from '../data/constants';
+import gsap from 'gsap';
 
 interface HomePageProps {
     state: ReturnType<typeof useAppState>;
@@ -19,6 +20,18 @@ export const HomePage = ({ state }: HomePageProps) => {
     const [bookingRoom, setBookingRoom] = useState<Room | null>(null);
     const [roomsFull, setRoomsFull] = useState(false);
     const [availableCount, setAvailableCount] = useState<number | null>(null);
+
+    // GSAP refs
+    const heroRef = useRef<HTMLDivElement>(null);
+    const logoRef = useRef<HTMLImageElement>(null);
+    const hotelNameRef = useRef<HTMLDivElement>(null);
+    const locationBadgeRef = useRef<HTMLDivElement>(null);
+    const heroTitleRef = useRef<HTMLHeadingElement>(null);
+    const heroDescRef = useRef<HTMLParagraphElement>(null);
+    const ratingBadgeRef = useRef<HTMLDivElement>(null);
+    const indicatorsRef = useRef<HTMLDivElement>(null);
+    const navActionsRef = useRef<HTMLDivElement>(null);
+    const heroImageRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         getSettings().then(s => {
@@ -37,6 +50,106 @@ export const HomePage = ({ state }: HomePageProps) => {
         }, 5000);
         return () => clearInterval(timer);
     }, []);
+
+    // GSAP Hero entrance animation
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+            // Ken Burns zoom on the hero image container
+            if (heroImageRef.current) {
+                gsap.fromTo(heroImageRef.current,
+                    { scale: 1.15 },
+                    { scale: 1, duration: 8, ease: 'power1.out' }
+                );
+            }
+
+            // Logo — scale in with elastic bounce
+            if (logoRef.current) {
+                tl.fromTo(logoRef.current,
+                    { scale: 0, opacity: 0, rotation: -180 },
+                    { scale: 1, opacity: 1, rotation: 0, duration: 1, ease: 'back.out(1.7)' },
+                    0.2
+                );
+            }
+
+            // Hotel name — slide in from left with fade
+            if (hotelNameRef.current) {
+                tl.fromTo(hotelNameRef.current,
+                    { x: -40, opacity: 0 },
+                    { x: 0, opacity: 1, duration: 0.8 },
+                    0.5
+                );
+            }
+
+            // Nav actions (call, menu) — fade in from right
+            if (navActionsRef.current) {
+                tl.fromTo(navActionsRef.current,
+                    { x: 30, opacity: 0 },
+                    { x: 0, opacity: 1, duration: 0.6 },
+                    0.6
+                );
+            }
+
+            // Location badge — pop in
+            if (locationBadgeRef.current) {
+                tl.fromTo(locationBadgeRef.current,
+                    { y: 20, opacity: 0, scale: 0.8 },
+                    { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(2)' },
+                    0.8
+                );
+            }
+
+            // Hero title — cinematic reveal from below
+            if (heroTitleRef.current) {
+                tl.fromTo(heroTitleRef.current,
+                    { y: 60, opacity: 0, clipPath: 'inset(100% 0 0 0)' },
+                    { y: 0, opacity: 1, clipPath: 'inset(0% 0 0 0)', duration: 1, ease: 'power4.out' },
+                    0.9
+                );
+            }
+
+            // Description text — fade up
+            if (heroDescRef.current) {
+                tl.fromTo(heroDescRef.current,
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.7 },
+                    1.3
+                );
+            }
+
+            // Rating badge — slide in from left
+            if (ratingBadgeRef.current) {
+                tl.fromTo(ratingBadgeRef.current,
+                    { x: -30, opacity: 0, scale: 0.9 },
+                    { x: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.5)' },
+                    1.5
+                );
+            }
+
+            // Indicators — stagger fade in
+            if (indicatorsRef.current) {
+                const dots = indicatorsRef.current.children;
+                tl.fromTo(dots,
+                    { y: 10, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.4, stagger: 0.06 },
+                    1.7
+                );
+            }
+        }, heroRef);
+
+        return () => ctx.revert();
+    }, []);
+
+    // Ken Burns effect on hero image transitions
+    useEffect(() => {
+        if (heroImageRef.current) {
+            gsap.fromTo(heroImageRef.current,
+                { scale: 1.1 },
+                { scale: 1, duration: 5, ease: 'power1.out' }
+            );
+        }
+    }, [heroIdx]);
 
     return (
         <div className="animate-fadeUp overflow-y-auto pb-20 md:pb-6">
@@ -64,21 +177,21 @@ export const HomePage = ({ state }: HomePageProps) => {
                 </div>
             ) : null}
 
-            {/* Hero */}
-            <div className="relative min-h-[360px] md:min-h-[520px] lg:min-h-[600px] overflow-hidden bg-[#1A0A00]">
-                {/* Image Slider */}
-                <div className="absolute inset-0 transition-opacity duration-1000">
+            {/* Hero — GSAP Animated */}
+            <div ref={heroRef} className="relative min-h-[360px] md:min-h-[520px] lg:min-h-[600px] overflow-hidden bg-[#1A0A00]">
+                {/* Image Slider with Ken Burns */}
+                <div ref={heroImageRef} className="absolute inset-0 will-change-transform">
                     {HERO_IMAGES.map((img, i) => (
                         <div
                             key={i}
                             className={`absolute inset-0 transition-opacity duration-1000 ${i === heroIdx ? 'opacity-100' : 'opacity-0'}`}
                         >
-                            <img src={img} alt={`Hero ${i + 1}`} className="w-full h-full object-cover opacity-60" />
+                            <img src={img} alt={`Hero ${i + 1}`} className="w-full h-full object-cover opacity-80" />
                         </div>
                     ))}
                 </div>
 
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-[#FFFCF7]/10" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/15 to-[#FFFCF7]/10" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(232,118,10,0.2),transparent_60%)]" />
 
                 <div className="relative z-10 px-5 pt-4 md:px-12 lg:px-20 md:pt-8">
@@ -86,11 +199,13 @@ export const HomePage = ({ state }: HomePageProps) => {
                         {/* Logo + Name */}
                         <div className="flex items-center gap-3 md:gap-4">
                             <img
+                                ref={logoRef}
                                 src={hotelLogo}
                                 alt="Hotel Amruta Bhojana Logo"
-                                className="w-14 h-14 md:w-20 md:h-20 rounded-full object-contain bg-white border-2 border-[#D4A017]/60 shadow-lg p-1 animate-fadeIn"
+                                className="w-14 h-14 md:w-20 md:h-20 rounded-full object-contain bg-white border-2 border-[#D4A017]/60 shadow-lg p-1"
+                                style={{ opacity: 0 }}
                             />
-                            <div>
+                            <div ref={hotelNameRef} style={{ opacity: 0 }}>
                                 <h1 className="text-white font-['Playfair_Display'] text-base md:text-xl lg:text-2xl font-semibold leading-tight">Hotel Amruta Bhojana</h1>
                                 <p className="text-white/80 text-[10px] md:text-sm italic">Puri, Odisha</p>
                                 <div className="flex gap-0.5 mt-1">
@@ -98,7 +213,7 @@ export const HomePage = ({ state }: HomePageProps) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div ref={navActionsRef} className="flex items-center gap-2" style={{ opacity: 0 }}>
                             {/* Call icon */}
                             <a
                                 href={`tel:${HOTEL_INFO.phone}`}
@@ -120,16 +235,16 @@ export const HomePage = ({ state }: HomePageProps) => {
                         </div>
                     </div>
 
-                    <div className="inline-block bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-1.5 text-xs md:text-sm text-white mb-4">
+                    <div ref={locationBadgeRef} className="inline-block bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-1.5 text-xs md:text-sm text-white mb-4" style={{ opacity: 0 }}>
                         Near Jagannath Temple · Puri
                     </div>
-                    <h2 className="font-['Playfair_Display'] text-[34px] md:text-5xl lg:text-6xl leading-tight text-white mb-3">
+                    <h2 ref={heroTitleRef} className="font-['Playfair_Display'] text-[34px] md:text-5xl lg:text-6xl leading-tight text-white mb-3" style={{ opacity: 0 }}>
                         Welcome to <em className="text-[#F59820] not-italic">Hotel Amruta Bhojana</em>
                     </h2>
-                    <p className="text-white/70 text-sm md:text-base lg:text-lg mb-4 max-w-xs md:max-w-lg">
+                    <p ref={heroDescRef} className="text-white/70 text-sm md:text-base lg:text-lg mb-4 max-w-xs md:max-w-lg" style={{ opacity: 0 }}>
                         Experience spiritual comfort near the sacred Jagannath Temple with modern amenities and traditional hospitality
                     </p>
-                    <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-2 text-xs md:text-sm text-white mb-5">
+                    <div ref={ratingBadgeRef} className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-2 text-xs md:text-sm text-white mb-5" style={{ opacity: 0 }}>
                         <span className="text-[#D4A017]">★★★★★</span>
                         <span>·</span>
                         <span className="font-semibold">{HOTEL_INFO.rating}</span>
@@ -138,7 +253,7 @@ export const HomePage = ({ state }: HomePageProps) => {
                     </div>
 
                     {/* Slider indicators */}
-                    <div className="flex gap-1.5 mt-2">
+                    <div ref={indicatorsRef} className="flex gap-1.5 mt-2">
                         {HERO_IMAGES.map((_, i) => (
                             <div
                                 key={i}

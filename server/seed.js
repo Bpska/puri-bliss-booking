@@ -3,7 +3,7 @@ const { Room } = require('./db');
 // Default rooms from the frontend constants (without image imports, storing paths as strings)
 const DEFAULT_ROOMS = [
     {
-        roomId: 1, name: 'Deluxe AC Room', type: 'Deluxe', tag: 'Best Value',
+        roomId: 1, name: 'Deluxe AC Room', type: 'Deluxe', tag: null,
         price: 3660, rating: 4.7, reviews: 318,
         features: ['Double Bed', 'Air Conditioning', 'City View', '130 sq.ft', 'Attached Bath', 'Geyser'],
         desc: 'A comfortable Deluxe Double Bed AC Room with city views, offering a peaceful stay just 100 meters from the Jagannath Temple. 130 sq.ft of well-appointed space with modern amenities.',
