@@ -73,7 +73,7 @@ export const BookNowPopup = ({ state }: { state: ReturnType<typeof useAppState> 
                             <div className="absolute bottom-0 left-0 w-16 h-16 border border-white/5 rounded-full -ml-4 -mb-4" />
 
                             <div className="relative flex flex-col items-center">
-                                <div className="w-16 h-16 rounded-2xl bg-white p-2 mb-4 shadow-lg overflow-hidden flex items-center justify-center">
+                                <div className="w-24 h-24 rounded-2xl bg-white p-2 mb-4 shadow-lg overflow-hidden flex items-center justify-center">
                                     <img src={hotelLogo} alt="Hotel Amruta Bhojana" className="w-full h-full object-contain" />
                                 </div>
                                 <h3 className="font-['Playfair_Display'] text-2xl font-bold text-white mb-2 leading-tight">

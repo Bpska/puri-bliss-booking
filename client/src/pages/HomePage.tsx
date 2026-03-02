@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Heart, Phone, X, AlertTriangle } from 'lucide-react';
+import { Phone, X, AlertTriangle } from 'lucide-react';
 import { AnimatedImage } from '../components/AnimatedImage';
-import { ROOMS, AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooftop, HERO_IMAGES, POLICIES, DINING, BOOKING_PLATFORMS, NEARBY_ATTRACTIONS, HOW_TO_REACH, CANCELLATION_POLICY } from '../data/constants';
+import { AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooftop, HERO_IMAGES, POLICIES, DINING, BOOKING_PLATFORMS, NEARBY_ATTRACTIONS, HOW_TO_REACH, CANCELLATION_POLICY } from '../data/constants';
+import heroNightExterior from '../images/hero-night-exterior.jpg';
 import { GoogleReviews } from '../components/GoogleReviews';
 import { useAppState } from '../hooks/useAppState';
 import { BookingFormModal } from '../components/BookingFormModal';
@@ -14,12 +15,16 @@ interface HomePageProps {
 }
 
 export const HomePage = ({ state }: HomePageProps) => {
-    const { setPage, wishlist, toggleWishlist, filter, setFilter, getFilteredRooms, setMenuOpen } = state;
+    const { setPage, filter, getFilteredRooms, setMenuOpen } = state;
     const [selectedImage, setSelectedImage] = useState<{ src: string, label: string } | null>(null);
     const [heroIdx, setHeroIdx] = useState(0);
     const [bookingRoom, setBookingRoom] = useState<Room | null>(null);
+    const [galleryFilter, setGalleryFilter] = useState('All');
     const [roomsFull, setRoomsFull] = useState(false);
     const [availableCount, setAvailableCount] = useState<number | null>(null);
+    const [heroImages, setHeroImages] = useState<{ src: string, title?: string, subtitle?: string }[]>(
+        HERO_IMAGES.map(src => ({ src }))
+    );
 
     // GSAP refs
     const heroRef = useRef<HTMLDivElement>(null);
@@ -38,6 +43,9 @@ export const HomePage = ({ state }: HomePageProps) => {
             const available = s.total_rooms - s.full_rooms;
             setRoomsFull(s.rooms_full || available <= 0);
             setAvailableCount(available);
+            if (s.hero_images && s.hero_images.length > 0) {
+                setHeroImages(s.hero_images);
+            }
         }).catch(() => {
             setRoomsFull(false);
             setAvailableCount(null);
@@ -46,10 +54,10 @@ export const HomePage = ({ state }: HomePageProps) => {
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setHeroIdx(prev => (prev + 1) % HERO_IMAGES.length);
+            setHeroIdx(prev => (prev + 1) % heroImages.length);
         }, 5000);
         return () => clearInterval(timer);
-    }, []);
+    }, [heroImages.length]);
 
     // GSAP Hero entrance animation
     useEffect(() => {
@@ -181,12 +189,12 @@ export const HomePage = ({ state }: HomePageProps) => {
             <div ref={heroRef} className="relative min-h-[360px] md:min-h-[520px] lg:min-h-[600px] overflow-hidden bg-[#1A0A00]">
                 {/* Image Slider with Ken Burns */}
                 <div ref={heroImageRef} className="absolute inset-0 will-change-transform">
-                    {HERO_IMAGES.map((img, i) => (
+                    {heroImages.map((img, i) => (
                         <div
                             key={i}
                             className={`absolute inset-0 transition-opacity duration-1000 ${i === heroIdx ? 'opacity-100' : 'opacity-0'}`}
                         >
-                            <img src={img} alt={`Hero ${i + 1}`} className="w-full h-full object-cover opacity-80" />
+                            <img src={img.src} alt={`Hero ${i + 1}`} className="w-full h-full object-cover opacity-80" />
                         </div>
                     ))}
                 </div>
@@ -202,7 +210,11 @@ export const HomePage = ({ state }: HomePageProps) => {
                                 ref={logoRef}
                                 src={hotelLogo}
                                 alt="Hotel Amruta Bhojana Logo"
-                                className="w-14 h-14 md:w-20 md:h-20 rounded-full object-contain bg-white border-2 border-[#D4A017]/60 shadow-lg p-1"
+                                onClick={() => {
+                                    setPage('home');
+                                    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                                }}
+                                className="w-20 h-20 md:w-32 md:h-32 rounded-full object-contain bg-white border-2 border-[#D4A017]/60 shadow-lg p-1 cursor-pointer"
                                 style={{ opacity: 0 }}
                             />
                             <div ref={hotelNameRef} style={{ opacity: 0 }}>
@@ -213,7 +225,26 @@ export const HomePage = ({ state }: HomePageProps) => {
                                 </div>
                             </div>
                         </div>
-                        <div ref={navActionsRef} className="flex items-center gap-2" style={{ opacity: 0 }}>
+                        <div ref={navActionsRef} className="flex items-center gap-3" style={{ opacity: 0 }}>
+                            {/* Desktop Nav */}
+                            <nav className="hidden md:flex items-center gap-6 mr-4">
+                                {[
+                                    { id: 'home', label: 'Home' },
+                                    { id: 'rooms', label: 'Rooms' },
+                                    { id: 'about', label: 'About Us' },
+                                    { id: 'contact', label: 'Contact' }
+                                ].map(link => (
+                                    <button
+                                        key={link.id}
+                                        onClick={() => setPage(link.id as any)}
+                                        className="text-white/80 hover:text-[#F59820] text-sm font-semibold transition-colors uppercase tracking-wider relative group"
+                                    >
+                                        {link.label}
+                                        <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#F59820] transition-all group-hover:w-full"></span>
+                                    </button>
+                                ))}
+                            </nav>
+
                             {/* Call icon */}
                             <a
                                 href={`tel:${HOTEL_INFO.phone}`}
@@ -222,10 +253,10 @@ export const HomePage = ({ state }: HomePageProps) => {
                             >
                                 <Phone size={16} className="text-white md:w-5 md:h-5" />
                             </a>
-                            {/* Hamburger */}
+                            {/* Hamburger - Mobile only */}
                             <button
                                 onClick={() => setMenuOpen(true)}
-                                className="w-9 h-9 md:w-11 md:h-11 border border-white/30 rounded-lg flex flex-col justify-center items-center gap-1 transition-transform active:scale-90 hover:bg-white/20"
+                                className="w-9 h-9 md:w-11 md:h-11 border border-white/30 rounded-lg flex flex-col justify-center items-center gap-1 transition-transform active:scale-90 hover:bg-white/20 md:hidden"
                                 aria-label="Open menu"
                             >
                                 <div className="w-4 h-0.5 md:w-5 md:h-[3px] bg-white rounded" />
@@ -238,11 +269,15 @@ export const HomePage = ({ state }: HomePageProps) => {
                     <div ref={locationBadgeRef} className="inline-block bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-1.5 text-xs md:text-sm text-white mb-4" style={{ opacity: 0 }}>
                         Near Jagannath Temple · Puri
                     </div>
-                    <h2 ref={heroTitleRef} className="font-['Playfair_Display'] text-[34px] md:text-5xl lg:text-6xl leading-tight text-white mb-3" style={{ opacity: 0 }}>
-                        Welcome to <em className="text-[#F59820] not-italic">Hotel Amruta Bhojana</em>
+                    <h2 ref={heroTitleRef} className="font-['Playfair_Display'] text-[34px] md:text-5xl lg:text-6xl leading-tight text-white mb-3 drop-shadow-lg" style={{ opacity: 0 }}>
+                        {heroImages[heroIdx]?.title || <>Welcome to <em className="text-[#F59820] not-italic">Hotel Amruta Bhojana</em></>}
                     </h2>
-                    <p ref={heroDescRef} className="text-white/70 text-sm md:text-base lg:text-lg mb-4 max-w-xs md:max-w-lg" style={{ opacity: 0 }}>
-                        Experience spiritual comfort near the sacred Jagannath Temple with modern amenities and traditional hospitality
+                    <p ref={heroDescRef} className="text-white/80 text-sm md:text-base lg:text-lg mb-5 max-w-xs md:max-w-lg drop-shadow-md" style={{ opacity: 0 }}>
+                        {heroImages[heroIdx]?.subtitle || 'Experience spiritual comfort near the sacred Jagannath Temple with modern amenities and traditional hospitality.'}
+                        <br className="hidden md:block" />
+                        <button onClick={() => setPage('about')} className="inline-flex items-center gap-1 text-[#F59820] font-semibold mt-2 hover:text-white transition-colors group">
+                            More info <span className="group-hover:translate-x-1 transition-transform">➔</span>
+                        </button>
                     </p>
                     <div ref={ratingBadgeRef} className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-2 text-xs md:text-sm text-white mb-5" style={{ opacity: 0 }}>
                         <span className="text-[#D4A017]">★★★★★</span>
@@ -252,9 +287,25 @@ export const HomePage = ({ state }: HomePageProps) => {
                         <span className="opacity-80">{HOTEL_INFO.reviewCount} Reviews on Google</span>
                     </div>
 
+                    {/* Social Media Links */}
+                    <div className="flex items-center gap-3 mb-5">
+                        <a href="https://www.instagram.com/amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg" style={{ background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)' }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
+                        </a>
+                        <a href="https://x.com/amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-black transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg border border-white/20">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                        </a>
+                        <a href="https://www.youtube.com/@amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-[#FF0000] transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                        </a>
+                        <a href="https://www.facebook.com/amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-[#1877F2] transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                        </a>
+                    </div>
+
                     {/* Slider indicators */}
                     <div ref={indicatorsRef} className="flex gap-1.5 mt-2">
-                        {HERO_IMAGES.map((_, i) => (
+                        {heroImages.map((_, i) => (
                             <div
                                 key={i}
                                 className={`h-1 md:h-1.5 rounded-full transition-all duration-300 ${i === heroIdx ? 'bg-[#F59820] w-6 md:w-8' : 'bg-white/30 w-1.5 md:w-2'}`}
@@ -264,409 +315,459 @@ export const HomePage = ({ state }: HomePageProps) => {
                 </div>
             </div>
 
-            {/* Booking card */}
-            <div className="px-4 md:px-12 lg:px-20 mt-4 mb-6">
-                <div className="bg-white rounded-2xl shadow-lg p-4 md:p-6 md:max-w-xl">
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                        <div><label className="text-xs md:text-sm text-[#7A5230] mb-1 block">Check-in</label><div className="text-sm md:text-base font-semibold text-[#1A0A00]">20 Feb 2025</div></div>
-                        <div><label className="text-xs md:text-sm text-[#7A5230] mb-1 block">Check-out</label><div className="text-sm md:text-base font-semibold text-[#1A0A00]">21 Feb 2025</div></div>
-                    </div>
-                    <div className="border-t border-[#FFE5C0] pt-3 mb-3">
-                        <label className="text-xs md:text-sm text-[#7A5230] mb-1 block">Guests</label>
-                        <div className="text-sm md:text-base font-semibold text-[#1A0A00]">2 Adults · 1 Room</div>
-                    </div>
-                    <button
-                        onClick={() => setPage('rooms')}
-                        className="w-full py-3 md:py-3.5 rounded-xl font-semibold text-white text-sm md:text-base transition-transform active:scale-95 hover:opacity-90"
-                        style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}
-                    >
-                        🔍 Check Availability
-                    </button>
-                </div>
-            </div>
-
-            {/* Our Rooms */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-semibold text-[#1A0A00]">Our Rooms</h3>
-                    <button onClick={() => setPage('rooms')} className="text-[#E8760A] text-sm md:text-base font-medium hover:underline">View All →</button>
-                </div>
-                <div className="flex gap-2 mb-4 overflow-x-auto">
-                    {['All Rooms', 'AC Room', 'Non-AC', 'Suite'].map(f => (
-                        <button
-                            key={f}
-                            onClick={() => setFilter(f === 'AC Room' ? 'AC' : f)}
-                            className={`px-4 py-2 rounded-full text-xs md:text-sm font-medium whitespace-nowrap transition-all active:scale-95 hover:shadow-md ${filter === (f === 'AC Room' ? 'AC' : f) ? 'bg-[#1A0A00] text-[#F59820]' : 'bg-white border border-[#FFE5C0] text-[#7A5230]'
-                                }`}
-                        >
-                            {f}
-                        </button>
-                    ))}
-                </div>
-                <div className="flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-3 lg:grid-cols-3 md:overflow-visible">
-                    {getFilteredRooms().slice(0, 3).map(room => (
-                        <div
-                            key={room.id}
-                            onClick={() => setPage('detail', room)}
-                            className="min-w-[210px] md:min-w-0 bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transition-transform active:scale-95 hover:shadow-xl hover:-translate-y-1"
-                        >
-                            <div className="relative h-[135px] md:h-[200px] lg:h-[240px] overflow-hidden">
-                                <AnimatedImage src={room.images[0]} alt={`${room.name} - Room 1`} className="w-full h-full" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
-                                <span className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white text-[10px] md:text-xs px-2 py-1 rounded-full pointer-events-none">{room.type}</span>
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); toggleWishlist(room.id); }}
-                                    className="absolute top-2 right-2 w-7 h-7 md:w-9 md:h-9 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center transition-transform active:scale-90 hover:bg-white/30"
-                                >
-                                    <Heart size={14} fill={wishlist.includes(room.id) ? '#E8760A' : 'none'} stroke={wishlist.includes(room.id) ? '#E8760A' : 'white'} />
-                                </button>
-                            </div>
-                            <div className="p-3 md:p-4">
-                                <h4 className="font-['Playfair_Display'] text-sm md:text-base font-semibold text-[#1A0A00] mb-1">{room.name}</h4>
-                                <p className="text-xs md:text-sm text-[#7A5230] mb-2">Near Jagannath Temple</p>
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <span className="font-['Playfair_Display'] text-lg md:text-xl font-bold text-[#3D1C00]">₹{room.price}</span>
-                                        <span className="text-[10px] md:text-xs text-[#7A5230]">/night</span>
-                                    </div>
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); setBookingRoom(room); }}
-                                        className="bg-[#E8760A] text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-lg hover:shadow-md active:scale-95 transition-all"
-                                    >
-                                        Book Now
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <BookingFormModal
-                room={bookingRoom}
-                isOpen={!!bookingRoom}
-                onClose={() => setBookingRoom(null)}
-            />
-
-            {/* Photo Gallery */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="flex items-center gap-2 mb-3">
-                    <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-semibold text-[#1A0A00]">Photo Gallery</h3>
-                </div>
-                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
-                    {GALLERY_IMAGES.map((img, i) => (
-                        <div
-                            key={i}
-                            className="animate-fadeUp"
-                            style={{ animationDelay: `${i * 0.1}s`, animationFillMode: 'both' }}
-                        >
-                            <AnimatedImage
-                                src={img.src}
-                                alt={img.label}
-                                className="aspect-square rounded-xl md:rounded-2xl"
-                                onClick={() => setSelectedImage(img)}
-                            />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Full-screen Lightbox */}
-            {
-                selectedImage && (
-                    <div
-                        className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-fadeIn"
-                        onClick={() => setSelectedImage(null)}
-                    >
-                        <button
-                            className="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white transition-transform active:scale-90 hover:bg-white/20"
-                            onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
-                        >
-                            <X size={24} />
-                        </button>
-
-                        <div
-                            className="relative max-w-full md:max-w-3xl max-h-[80vh] overflow-hidden rounded-2xl shadow-2xl animate-fadeUp"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <img
-                                src={selectedImage.src}
-                                alt={selectedImage.label}
-                                className="w-full h-full object-contain animate-fadeIn"
-                            />
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                                <h4 className="text-white font-['Playfair_Display'] text-xl font-semibold mb-1">{selectedImage.label}</h4>
-                                <p className="text-white/70 text-sm">Hotel Amruta Bhojana, Puri</p>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-
-            {/* Rooftop Garden Highlight */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="relative rounded-2xl overflow-hidden shadow-lg" style={{ height: undefined }}>
-                    <div className="h-[200px] md:h-[350px] lg:h-[420px]">
-                        <AnimatedImage
-                            src={highlightRooftop}
-                            alt="Rooftop Garden & Restaurant"
-                            className="w-full h-full"
-                        />
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 pointer-events-none">
-                        <div className="inline-block bg-[#D4A017]/80 text-white text-[10px] md:text-xs px-2.5 py-0.5 rounded-full font-semibold mb-2">✦ Exclusive Feature</div>
-                        <h4 className="font-['Playfair_Display'] text-lg md:text-2xl lg:text-3xl font-semibold text-white leading-tight">Rooftop Garden Restaurant</h4>
-                        <p className="text-white/80 text-xs md:text-sm mt-1">Dine among lush green walls with LED accents</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Special offer banner */}
-            <div className="mx-4 md:mx-12 lg:mx-20 mb-6 p-5 md:p-8 rounded-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
+            {/* Special offer banner (restored below hero section) */}
+            <div className="mx-4 md:mx-12 lg:mx-20 mt-6 mb-6 p-5 md:p-8 rounded-2xl relative overflow-hidden shadow-xl" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
                 <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 border-2 border-white/10 rounded-full -mr-10 -mt-10" />
-                <div className="relative">
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-3 leading-tight">Book Your Stay Today</h3>
+                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-2 leading-tight">Book Your Stay Today</h3>
+                        <p className="text-white/70 text-xs md:text-sm">Experience luxury near Jagannath Temple</p>
+                    </div>
                     <div className="flex items-center gap-3 md:gap-5">
+                        <span className="text-[#F59820] font-bold text-lg md:text-xl">₹3,660 <span className="text-sm font-normal text-white/80">per night</span></span>
                         <button
-                            onClick={() => setPage('detail', ROOMS[0])}
-                            className="bg-white text-[#1A0A00] px-5 py-2.5 md:px-7 md:py-3 rounded-lg font-semibold text-sm md:text-base transition-transform active:scale-95 hover:shadow-lg"
+                            onClick={() => setPage('rooms')}
+                            className="bg-white text-[#1A0A00] px-6 py-3 rounded-xl font-bold text-sm md:text-base transition-transform active:scale-95 hover:shadow-lg shadow-md whitespace-nowrap"
                         >
                             Book Now
                         </button>
-                        <span className="text-[#F59820] font-semibold text-sm md:text-lg">₹3,660 per night</span>
                     </div>
                 </div>
             </div>
+            {/* Background image wrapper for remaining content */}
+            <div
+                className="relative"
+                style={{
+                    backgroundImage: `url(${heroNightExterior})`,
+                    backgroundAttachment: 'fixed',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                }}
+            >
+                {/* Semi-transparent overlay for readability */}
+                <div className="absolute inset-0 bg-[#FFFCF7]/70 pointer-events-none" />
+                <div className="relative z-10">
 
-            {/* ✨ Our Facilities – highlighted */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="flex items-center gap-2 mb-1">
-                    <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Our Facilities</h3>
-                    <div className="h-1 flex-1 rounded-full bg-[#FFE5C0]" />
-                </div>
-                <p className="text-xs md:text-sm text-[#7A5230] mb-4 ml-10">Everything you need for a perfect stay</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-                    {AMENITIES.map((a, i) => (
-                        <div
-                            key={i}
-                            className="rounded-2xl p-4 flex items-center gap-3 shadow-sm border border-[#FFE5C0] transition-all active:scale-95 hover:shadow-md hover:-translate-y-0.5"
-                            style={{ background: a.bg }}
-                        >
+                    {/* Our Rooms */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 onClick={() => setPage('rooms')} className="font-['Playfair_Display'] text-xl md:text-2xl font-semibold text-[#1A0A00] cursor-pointer hover:text-[#E8760A] transition-colors">Our Rooms</h3>
+                            <button onClick={() => setPage('rooms')} className="text-[#E8760A] text-sm md:text-base font-medium hover:underline">View All →</button>
+                        </div>
+                        <div className="flex gap-2 mb-4 overflow-x-auto cursor-pointer" onClick={() => setPage('rooms')} style={{ scrollbarWidth: 'none' }}>
+                            {['All Rooms', 'Deluxe AC With BreakFast', 'Deluxe AC', 'AC Room with BreakFast', 'AC Room', 'Non-AC with BreakFast', 'Non-AC'].map(f => (
+                                <div
+                                    key={f}
+                                    className={`px-4 py-2 rounded-full text-xs md:text-sm font-medium whitespace-nowrap transition-all active:scale-95 hover:shadow-md ${filter === f ? 'bg-[#1A0A00] text-[#F59820]' : 'bg-white border border-[#FFE5C0] text-[#7A5230]'
+                                        }`}
+                                >
+                                    {f}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex gap-3 overflow-x-auto pb-2 md:grid md:grid-cols-3 lg:grid-cols-3 md:overflow-visible">
+                            {getFilteredRooms().slice(0, 3).map(room => (
+                                <div
+                                    key={room.id}
+                                    onClick={() => setPage('rooms')}
+                                    className="min-w-[210px] md:min-w-0 bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transition-transform active:scale-95 hover:shadow-xl hover:-translate-y-1"
+                                >
+                                    <div className="relative h-[135px] md:h-[200px] lg:h-[240px] overflow-hidden">
+                                        <AnimatedImage src={room.images[0]} alt={`${room.name} - Room 1`} className="w-full h-full" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+                                        <span className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm border border-white/30 text-white text-[10px] md:text-xs px-2 py-1 rounded-full pointer-events-none">{room.type}</span>
+                                    </div>
+                                    <div className="p-3 md:p-4">
+                                        <h4 className="font-['Playfair_Display'] text-sm md:text-base font-semibold text-[#1A0A00] mb-1">{room.name}</h4>
+                                        <p className="text-xs md:text-sm text-[#7A5230] mb-2">Near Jagannath Temple</p>
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <span className="font-['Playfair_Display'] text-lg md:text-xl font-bold text-[#3D1C00]">₹{room.price}</span>
+                                                <span className="text-[10px] md:text-xs text-[#7A5230]">/night</span>
+                                            </div>
+                                            <div className="bg-[#E8760A] text-white text-[10px] md:text-xs font-bold px-3 py-1.5 rounded-lg">
+                                                Book Now
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <BookingFormModal
+                        room={bookingRoom}
+                        isOpen={!!bookingRoom}
+                        onClose={() => setBookingRoom(null)}
+                    />
+
+                    {/* Photo Gallery */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                            <div className="flex items-center gap-2">
+                                <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
+                                <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-semibold text-[#1A0A00]">Photo Gallery</h3>
+                            </div>
+                            {/* Gallery Categories */}
+                            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                                {['All', ...Array.from(new Set(GALLERY_IMAGES.map(img => img.category).filter(Boolean)))].map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setGalleryFilter(cat!)}
+                                        className={`px-3 py-1.5 rounded-full text-[10px] md:text-xs font-medium whitespace-nowrap transition-all ${galleryFilter === cat
+                                            ? 'bg-[#1A0A00] text-[#F59820] shadow-md'
+                                            : 'bg-white/50 border border-[#FFE5C0] text-[#7A5230] hover:bg-white'
+                                            }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
+                            {GALLERY_IMAGES
+                                .filter(img => galleryFilter === 'All' || img.category === galleryFilter)
+                                .map((img, i) => (
+                                    <div
+                                        key={i}
+                                        className="animate-fadeUp"
+                                        style={{ animationDelay: `${i * 0.05}s`, animationFillMode: 'both' }}
+                                    >
+                                        <AnimatedImage
+                                            src={img.src}
+                                            alt={img.label}
+                                            className="aspect-square rounded-xl md:rounded-2xl cursor-pointer"
+                                            onClick={() => setSelectedImage(img)}
+                                        />
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+
+                    {/* Full-screen Lightbox */}
+                    {
+                        selectedImage && (
                             <div
-                                className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl shadow-sm text-2xl flex-shrink-0"
-                                style={{ background: `${a.color}22`, border: `1.5px solid ${a.color}44` }}
+                                className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col items-center justify-center p-4 animate-fadeIn"
+                                onClick={() => setSelectedImage(null)}
                             >
-                                {a.icon}
+                                <button
+                                    className="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white transition-transform active:scale-90 hover:bg-white/20"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedImage(null); }}
+                                >
+                                    <X size={24} />
+                                </button>
+
+                                <div
+                                    className="relative max-w-full md:max-w-3xl max-h-[80vh] overflow-hidden rounded-2xl shadow-2xl animate-fadeUp"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <img
+                                        src={selectedImage.src}
+                                        alt={selectedImage.label}
+                                        className="w-full h-full object-contain animate-fadeIn"
+                                    />
+                                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                                        <h4 className="text-white font-['Playfair_Display'] text-xl font-semibold mb-1">{selectedImage.label}</h4>
+                                        <p className="text-white/70 text-sm">Hotel Amruta Bhojana, Puri</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <div className="text-sm md:text-base font-bold" style={{ color: a.color }}>{a.name}</div>
-                                <div className="text-[10px] md:text-xs text-[#7A5230] leading-snug">{a.desc}</div>
+                        )
+                    }
+
+                    {/* Rooftop Garden Highlight */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="relative rounded-2xl overflow-hidden shadow-lg" style={{ height: undefined }}>
+                            <div className="h-[200px] md:h-[350px] lg:h-[420px]">
+                                <AnimatedImage
+                                    src={highlightRooftop}
+                                    alt="Rooftop Garden & Restaurant"
+                                    className="w-full h-full"
+                                />
                             </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Contact quick links */}
-            <div className="mx-4 md:mx-12 lg:mx-20 mb-6 bg-white rounded-2xl shadow-md overflow-hidden divide-y divide-[#FFE5C0] md:grid md:grid-cols-2 md:divide-y-0">
-                <a href={`tel:${HOTEL_INFO.phone}`} className="flex items-center gap-3 p-4 transition-colors active:bg-[#FFF2E0] hover:bg-[#FFF2E0] md:border-r md:border-[#FFE5C0]">
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF2E0] rounded-full flex items-center justify-center">
-                        <Phone size={18} className="text-[#E8760A]" />
-                    </div>
-                    <div className="flex-1">
-                        <div className="text-sm md:text-base font-semibold text-[#1A0A00]">Call Us</div>
-                        <div className="text-xs md:text-sm text-[#7A5230]">+91 94373 88224</div>
-                    </div>
-                </a>
-                {/* WhatsApp */}
-                <a
-                    href={`https://wa.me/${HOTEL_INFO.whatsapp}?text=Hi%2C%20I%20would%20like%20to%20book%20a%20room`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-4 transition-colors active:bg-[#F0FFF4] hover:bg-[#F0FFF4]"
-                >
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center" style={{ background: '#E8F5EB' }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                    </div>
-                    <div className="flex-1">
-                        <div className="text-sm md:text-base font-semibold text-[#1A0A00]">WhatsApp</div>
-                        <div className="text-xs md:text-sm text-[#7A5230]">Chat with us instantly</div>
-                    </div>
-                </a>
-            </div>
-
-            {/* 🍽️ Dining & Restaurant */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="flex items-center gap-2 mb-1">
-                    <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Dining & Restaurant</h3>
-                    <div className="h-1 flex-1 rounded-full bg-[#FFE5C0]" />
-                </div>
-                <p className="text-xs md:text-sm text-[#7A5230] mb-4 ml-10">{DINING.cuisine}</p>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                    {DINING.timings.map((t, i) => (
-                        <div key={i} className="bg-white rounded-2xl shadow-sm border border-[#FFE5C0] p-4 md:p-5 flex items-center gap-3 hover:shadow-md transition-shadow">
-                            <div className="w-12 h-12 md:w-14 md:h-14 bg-[#FFF2E0] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">{t.icon}</div>
-                            <div>
-                                <div className="text-sm md:text-base font-bold text-[#1A0A00]">{t.meal}</div>
-                                <div className="text-xs md:text-sm text-[#7A5230]">{t.time}</div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 pointer-events-none">
+                                <div className="inline-block bg-[#D4A017]/80 text-white text-[10px] md:text-xs px-2.5 py-0.5 rounded-full font-semibold mb-2">✦ Exclusive Feature</div>
+                                <h4 className="font-['Playfair_Display'] text-lg md:text-2xl lg:text-3xl font-semibold text-white leading-tight">Rooftop Garden Restaurant</h4>
+                                <p className="text-white/80 text-xs md:text-sm mt-1">Dine among lush green walls with LED accents</p>
                             </div>
                         </div>
-                    ))}
-                </div>
+                    </div>
 
-                <div className="bg-white rounded-2xl shadow-sm border border-[#FFE5C0] p-4 md:p-5 flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2">
-                        <span className="text-2xl">💰</span>
-                        <div>
-                            <div className="text-xs text-[#7A5230]">Average Meal Cost</div>
-                            <div className="text-lg md:text-xl font-bold text-[#3D1C00]">{DINING.avgCost}</div>
+                    {/* Booking card replaced the banner */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6 relative z-10 -mt-2">
+                        <div className="bg-white rounded-2xl shadow-lg p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 max-w-5xl mx-auto border border-[#FFE5C0]/50">
+                            <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:divide-x divide-[#FFE5C0]">
+                                <div className="md:px-4">
+                                    <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Check-in</label>
+                                    <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">20 Feb 2025</div>
+                                </div>
+                                <div className="md:px-4">
+                                    <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Check-out</label>
+                                    <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">21 Feb 2025</div>
+                                </div>
+                                <div className="col-span-2 md:col-span-1 border-t md:border-t-0 border-[#FFE5C0] pt-3 md:pt-0 md:px-4">
+                                    <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Guests & Rooms</label>
+                                    <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">2 Adults · 1 Room</div>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setPage('rooms')}
+                                className="w-full md:w-auto px-6 py-3.5 rounded-xl font-bold text-white text-sm md:text-base transition-transform active:scale-95 hover:shadow-lg flex-shrink-0 whitespace-nowrap"
+                                style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}
+                            >
+                                🔍 Check Availability
+                            </button>
                         </div>
                     </div>
-                    <div className="h-8 w-px bg-[#FFE5C0] hidden md:block" />
-                    <div className="flex items-center gap-2">
-                        <span className="text-2xl">🛵</span>
-                        <div>
-                            <div className="text-xs text-[#7A5230]">Order Online</div>
-                            <div className="flex gap-2 mt-0.5">
-                                {DINING.delivery.map((d, i) => (
-                                    <span key={i} className="text-xs md:text-sm font-semibold px-2.5 py-0.5 rounded-full" style={{ background: `${d.color}15`, color: d.color }}>{d.name}</span>
+
+                    {/* ✨ Our Facilities – highlighted */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
+                            <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Our Facilities</h3>
+                            <div className="h-1 flex-1 rounded-full bg-[#FFE5C0]" />
+                        </div>
+                        <p className="text-xs md:text-sm text-[#7A5230] mb-4 ml-10">Everything you need for a perfect stay</p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                            {AMENITIES.map((a, i) => (
+                                <div
+                                    key={i}
+                                    className="rounded-2xl p-4 flex items-center gap-3 shadow-sm border border-[#FFE5C0] transition-all active:scale-95 hover:shadow-md hover:-translate-y-0.5"
+                                    style={{ background: a.bg }}
+                                >
+                                    <div
+                                        className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-xl shadow-sm text-2xl flex-shrink-0"
+                                        style={{ background: `${a.color}22`, border: `1.5px solid ${a.color}44` }}
+                                    >
+                                        {a.icon}
+                                    </div>
+                                    <div>
+                                        <div className="text-sm md:text-base font-bold" style={{ color: a.color }}>{a.name}</div>
+                                        <div className="text-[10px] md:text-xs text-[#7A5230] leading-snug">{a.desc}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* 🍽️ Dining & Restaurant */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
+                            <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Dining & Restaurant</h3>
+                            <div className="h-1 flex-1 rounded-full bg-[#FFE5C0]" />
+                        </div>
+                        <p className="text-xs md:text-sm text-[#7A5230] mb-4 ml-10">{DINING.cuisine}</p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                            {DINING.timings.map((t, i) => (
+                                <div key={i} className="bg-white rounded-2xl shadow-sm border border-[#FFE5C0] p-4 md:p-5 flex items-center gap-3 hover:shadow-md transition-shadow">
+                                    <div className="w-12 h-12 md:w-14 md:h-14 bg-[#FFF2E0] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">{t.icon}</div>
+                                    <div>
+                                        <div className="text-sm md:text-base font-bold text-[#1A0A00]">{t.meal}</div>
+                                        <div className="text-xs md:text-sm text-[#7A5230]">{t.time}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="bg-gradient-to-r from-[#FFF8F0] to-[#FFF2E0] rounded-2xl shadow-md border-2 border-[#E8760A]/30 p-5 md:p-6 mt-2">
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="text-2xl">🛵</span>
+                                <h4 className="text-base md:text-lg font-bold text-[#1A0A00]">Order Online</h4>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-3">
+                                <div className="flex items-center gap-2 flex-1 md:flex-none">
+                                    <span className="text-2xl">💰</span>
+                                    <div>
+                                        <div className="text-xs text-[#7A5230]">Average Meal Cost</div>
+                                        <div className="text-lg md:text-xl font-bold text-[#3D1C00]">{DINING.avgCost}</div>
+                                    </div>
+                                </div>
+                                <div className="h-8 w-px bg-[#FFE5C0] hidden md:block" />
+                                <div className="flex flex-wrap gap-3">
+                                    {/* Zomato */}
+                                    <a
+                                        href={DINING.delivery[0]?.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-5 py-3 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border-2"
+                                        style={{ background: '#FFFFFF', borderColor: '#E23744' }}
+                                    >
+                                        <svg width="24" height="24" viewBox="0 0 48 48">
+                                            <circle cx="24" cy="24" r="24" fill="#E23744" />
+                                            <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="22" fontWeight="bold" fontFamily="sans-serif">Z</text>
+                                        </svg>
+                                        <span className="text-sm md:text-base font-bold" style={{ color: '#E23744' }}>Zomato</span>
+                                    </a>
+                                    {/* Swiggy */}
+                                    <a
+                                        href={DINING.delivery[1]?.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-5 py-3 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border-2"
+                                        style={{ background: '#FFFFFF', borderColor: '#FC8019' }}
+                                    >
+                                        <svg width="24" height="24" viewBox="0 0 48 48">
+                                            <circle cx="24" cy="24" r="24" fill="#FC8019" />
+                                            <text x="50%" y="55%" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="22" fontWeight="bold" fontFamily="sans-serif">S</text>
+                                        </svg>
+                                        <span className="text-sm md:text-base font-bold" style={{ color: '#FC8019' }}>Swiggy</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 📋 Hotel Policies */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
+                            <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Hotel Policies</h3>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                            {POLICIES.map((p, i) => (
+                                <div key={i} className="bg-white rounded-2xl shadow-sm border border-[#FFE5C0] p-4 text-center hover:shadow-md transition-shadow">
+                                    <div className="text-2xl mb-2">{p.icon}</div>
+                                    <div className="text-sm md:text-base font-bold text-[#1A0A00] mb-1">{p.title}</div>
+                                    <div className="text-[10px] md:text-xs text-[#7A5230]">{p.detail}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* 📜 Cancellation Policy */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="bg-gradient-to-br from-[#FFF8F0] to-[#FFF2E0] rounded-2xl shadow-md border border-[#FFE5C0] p-5 md:p-8">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#E8760A] rounded-xl flex items-center justify-center text-white text-xl">📜</div>
+                                <div>
+                                    <h3 className="font-['Playfair_Display'] text-lg md:text-2xl font-bold text-[#1A0A00]">Cancellation Policy</h3>
+                                    <p className="text-[10px] md:text-xs text-[#7A5230]">Please read carefully before booking</p>
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                {CANCELLATION_POLICY.map((rule, i) => (
+                                    <div key={i} className="flex gap-3 items-start">
+                                        <div className="w-7 h-7 md:w-8 md:h-8 bg-[#E8760A] rounded-lg flex items-center justify-center text-white text-xs md:text-sm font-bold flex-shrink-0 mt-0.5">{i + 1}</div>
+                                        <p className="text-sm md:text-base text-[#3D1C00] leading-relaxed">{rule}</p>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            {/* 📋 Hotel Policies */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                    <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Hotel Policies</h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    {POLICIES.map((p, i) => (
-                        <div key={i} className="bg-white rounded-2xl shadow-sm border border-[#FFE5C0] p-4 text-center hover:shadow-md transition-shadow">
-                            <div className="text-2xl mb-2">{p.icon}</div>
-                            <div className="text-sm md:text-base font-bold text-[#1A0A00] mb-1">{p.title}</div>
-                            <div className="text-[10px] md:text-xs text-[#7A5230]">{p.detail}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* 📜 Cancellation Policy */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="bg-gradient-to-br from-[#FFF8F0] to-[#FFF2E0] rounded-2xl shadow-md border border-[#FFE5C0] p-5 md:p-8">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-[#E8760A] rounded-xl flex items-center justify-center text-white text-xl">📜</div>
-                        <div>
-                            <h3 className="font-['Playfair_Display'] text-lg md:text-2xl font-bold text-[#1A0A00]">Cancellation Policy</h3>
-                            <p className="text-[10px] md:text-xs text-[#7A5230]">Please read carefully before booking</p>
+                    {/* 🏨 Book on Multiple Platforms */}
+                    <div className="mx-4 md:mx-12 lg:mx-20 mb-6 p-5 md:p-8 rounded-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
+                        <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 border-2 border-white/10 rounded-full -mr-10 -mt-10" />
+                        <div className="relative">
+                            <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-2 leading-tight">Available on All Platforms</h3>
+                            <p className="text-white/60 text-xs md:text-sm mb-4">Book with confidence through your preferred partner</p>
+                            <div className="flex flex-wrap gap-2 md:gap-3">
+                                {BOOKING_PLATFORMS.map((bp, i) => (
+                                    <a
+                                        key={i}
+                                        href={bp.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-xl text-sm md:text-base font-semibold transition-transform active:scale-95 hover:shadow-lg ${bp.highlight
+                                            ? 'bg-gradient-to-br from-[#E8760A] to-[#F59820] text-white'
+                                            : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'
+                                            }`}
+                                    >
+                                        <span>{bp.icon}</span>
+                                        <span>{bp.name}</span>
+                                    </a>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                    <div className="space-y-3">
-                        {CANCELLATION_POLICY.map((rule, i) => (
-                            <div key={i} className="flex gap-3 items-start">
-                                <div className="w-7 h-7 md:w-8 md:h-8 bg-[#E8760A] rounded-lg flex items-center justify-center text-white text-xs md:text-sm font-bold flex-shrink-0 mt-0.5">{i + 1}</div>
-                                <p className="text-sm md:text-base text-[#3D1C00] leading-relaxed">{rule}</p>
-                            </div>
-                        ))}
+
+                    {/* 📍 Nearby Attractions */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
+                            <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Nearby Attractions</h3>
+                            <div className="h-1 flex-1 rounded-full bg-[#FFE5C0]" />
+                        </div>
+                        <p className="text-xs md:text-sm text-[#7A5230] mb-4 ml-10">Explore Puri and beyond</p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                            {NEARBY_ATTRACTIONS.map((a, i) => (
+                                <a
+                                    key={i}
+                                    href={a.mapLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block group relative rounded-2xl overflow-hidden aspect-[4/5] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                                >
+                                    {/* Background Image */}
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                        style={{ backgroundImage: `url(${a.image})` }}
+                                    />
+
+                                    {/* Gradient Overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
+
+                                    {/* Top Icon Badge */}
+                                    <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-sm shadow-lg">
+                                        {a.icon}
+                                    </div>
+
+                                    {/* Distance Badge */}
+                                    <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-md text-white text-[10px] md:text-xs px-2 py-1 rounded-full font-semibold border border-white/10">
+                                        {a.distance}
+                                    </div>
+
+                                    {/* Content (Bottom aligned) */}
+                                    <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                        <h4 className="text-white font-bold text-sm md:text-base leading-tight mb-1">{a.name}</h4>
+                                        <div className="flex items-center gap-1 text-[#FFE5C0] text-[10px] md:text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <span>Open Map</span>
+                                            <span className="text-[8px]">↗</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            {/* 🏨 Book on Multiple Platforms */}
-            <div className="mx-4 md:mx-12 lg:mx-20 mb-6 p-5 md:p-8 rounded-2xl relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
-                <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 border-2 border-white/10 rounded-full -mr-10 -mt-10" />
-                <div className="relative">
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-3xl text-white mb-2 leading-tight">Available on All Platforms</h3>
-                    <p className="text-white/60 text-xs md:text-sm mb-4">Book with confidence through your preferred partner</p>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                        {BOOKING_PLATFORMS.map((bp, i) => (
-                            <a
-                                key={i}
-                                href={bp.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`flex items-center gap-2 px-4 py-2.5 md:px-5 md:py-3 rounded-xl text-sm md:text-base font-semibold transition-transform active:scale-95 hover:shadow-lg ${bp.highlight
-                                    ? 'bg-gradient-to-br from-[#E8760A] to-[#F59820] text-white'
-                                    : 'bg-white/10 border border-white/20 text-white hover:bg-white/20'
-                                    }`}
-                            >
-                                <span>{bp.icon}</span>
-                                <span>{bp.name}</span>
-                            </a>
-                        ))}
+                    {/* 🚗 How to Reach */}
+                    <div className="px-4 md:px-12 lg:px-20 mb-6">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
+                            <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">How to Reach</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                            {HOW_TO_REACH.map((h, i) => (
+                                <a
+                                    key={i}
+                                    href={h.mapLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="bg-white rounded-xl shadow-sm border border-[#FFE5C0] p-4 flex items-center gap-3 hover:shadow-md transition-all active:scale-95 group"
+                                >
+                                    <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF2E0] rounded-lg flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-[#E8760A]/10 transition-colors">{h.icon}</div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="text-sm md:text-base font-semibold text-[#1A0A00] truncate group-hover:text-[#E8760A] transition-colors">{h.name}</div>
+                                        <div className="text-xs md:text-sm text-[#E8760A] font-medium">{h.distance}</div>
+                                    </div>
+                                    <div className="text-[#E8760A] opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            {/* 📍 Nearby Attractions */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="flex items-center gap-2 mb-1">
-                    <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">Nearby Attractions</h3>
-                    <div className="h-1 flex-1 rounded-full bg-[#FFE5C0]" />
-                </div>
-                <p className="text-xs md:text-sm text-[#7A5230] mb-4 ml-10">Explore Puri and beyond</p>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    {NEARBY_ATTRACTIONS.map((a, i) => (
-                        <a
-                            key={i}
-                            href={a.mapLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`rounded-2xl p-4 md:p-5 text-center shadow-sm border transition-all hover:shadow-md hover:-translate-y-0.5 active:scale-95 group ${a.highlight
-                                ? 'bg-gradient-to-br from-[#FFF2E0] to-[#FFFCF7] border-[#E8760A]/30'
-                                : 'bg-white border-[#FFE5C0] hover:border-[#E8760A]/30'
-                                }`}
-                        >
-                            <div className="text-2xl md:text-3xl mb-2 flex flex-col items-center">
-                                <span>{a.icon}</span>
-                                <span className="text-[8px] md:text-[10px] uppercase font-bold text-[#E8760A] opacity-0 group-hover:opacity-100 transition-opacity mt-1">Open Map</span>
-                            </div>
-                            <div className="text-xs md:text-sm font-bold text-[#1A0A00] mb-1 leading-snug">{a.name}</div>
-                            <div className="inline-block bg-[#FFF2E0] text-[#E8760A] text-[10px] md:text-xs px-2 py-0.5 rounded-full font-semibold">{a.distance}</div>
-                        </a>
-                    ))}
-                </div>
-            </div>
+                    {/* Google Reviews */}
+                    <GoogleReviews />
 
-            {/* 🚗 How to Reach */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="flex items-center gap-2 mb-4">
-                    <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
-                    <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">How to Reach</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {HOW_TO_REACH.map((h, i) => (
-                        <a
-                            key={i}
-                            href={h.mapLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-white rounded-xl shadow-sm border border-[#FFE5C0] p-4 flex items-center gap-3 hover:shadow-md transition-all active:scale-95 group"
-                        >
-                            <div className="w-10 h-10 md:w-12 md:h-12 bg-[#FFF2E0] rounded-lg flex items-center justify-center text-xl flex-shrink-0 group-hover:bg-[#E8760A]/10 transition-colors">{h.icon}</div>
-                            <div className="flex-1 min-w-0">
-                                <div className="text-sm md:text-base font-semibold text-[#1A0A00] truncate group-hover:text-[#E8760A] transition-colors">{h.name}</div>
-                                <div className="text-xs md:text-sm text-[#E8760A] font-medium">{h.distance}</div>
-                            </div>
-                            <div className="text-[#E8760A] opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
-                            </div>
-                        </a>
-                    ))}
-                </div>
-            </div>
-
-            {/* Google Reviews */}
-            <GoogleReviews />
+                </div>{/* end relative z-10 */}
+            </div>{/* end background image wrapper */}
         </div >
     );
 };

@@ -15,16 +15,41 @@ export const RoomsPage = ({ state }: RoomsPageProps) => {
         <div className="animate-fadeUp overflow-y-auto pb-20 md:pb-6">
 
             <div className="relative min-h-[180px] md:min-h-[240px] overflow-hidden" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
-                <div className="relative z-10 px-5 py-5 md:px-12 lg:px-20 md:py-8 flex items-center gap-4">
-                    <img
-                        src={hotelLogo}
-                        alt="Hotel Amruta Bhojana"
-                        className="w-14 h-14 md:w-20 md:h-20 rounded-full object-contain bg-white border-2 border-[#D4A017]/60 shadow-lg flex-shrink-0 p-1 animate-fadeIn"
-                    />
-                    <div>
-                        <h1 className="font-['Playfair_Display'] text-xl md:text-3xl font-semibold text-white mb-1">Rooms &amp; Tariff</h1>
-                        <p className="text-white/70 text-xs md:text-sm">Comfortable stays near Jagannath Temple</p>
+                <div className="relative z-10 px-5 py-5 md:px-12 lg:px-20 md:py-8 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <img
+                            src={hotelLogo}
+                            alt="Hotel Amruta Bhojana Logo"
+                            onClick={() => {
+                                setPage('home');
+                                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                            }}
+                            className="w-16 h-16 md:w-20 md:h-20 rounded-full object-contain bg-white border-2 border-[#D4A017]/60 shadow-lg p-1 cursor-pointer transition-transform active:scale-95"
+                        />
+                        <div>
+                            <h1 className="font-['Playfair_Display'] text-xl md:text-3xl font-semibold text-white mb-1">Rooms &amp; Tariff</h1>
+                            <p className="text-white/70 text-xs md:text-sm">Comfortable stays near Jagannath Temple</p>
+                        </div>
                     </div>
+
+                    {/* Desktop Nav */}
+                    <nav className="hidden md:flex items-center gap-6">
+                        {[
+                            { id: 'home', label: 'Home' },
+                            { id: 'rooms', label: 'Rooms' },
+                            { id: 'about', label: 'About Us' },
+                            { id: 'contact', label: 'Contact' }
+                        ].map(link => (
+                            <button
+                                key={link.id}
+                                onClick={() => setPage(link.id as any)}
+                                className={`text-sm font-semibold transition-colors uppercase tracking-wider relative group ${link.id === 'rooms' ? 'text-[#F59820]' : 'text-white/80 hover:text-[#F59820]'}`}
+                            >
+                                {link.label}
+                                <span className={`absolute -bottom-1 left-0 h-0.5 bg-[#F59820] transition-all ${link.id === 'rooms' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                            </button>
+                        ))}
+                    </nav>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 h-8 bg-[#FFFCF7] rounded-t-3xl" />
             </div>
@@ -34,11 +59,12 @@ export const RoomsPage = ({ state }: RoomsPageProps) => {
                 <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
                     {[
                         { label: 'All Rooms', value: 'All Rooms' },
-                        { label: '❄️ AC Rooms', value: 'AC' },
-                        { label: '🌬 Non-AC', value: 'Non-AC' },
-                        { label: '👑 Deluxe', value: 'Deluxe' },
-                        { label: '💰 Budget', value: 'Budget' },
-                        { label: '🏡 Suite', value: 'Suite' },
+                        { label: 'Deluxe AC With BreakFast', value: 'Deluxe AC With BreakFast' },
+                        { label: 'Deluxe AC', value: 'Deluxe AC' },
+                        { label: 'AC Room with BreakFast', value: 'AC Room with BreakFast' },
+                        { label: 'AC Room', value: 'AC Room' },
+                        { label: 'Non-AC with BreakFast', value: 'Non-AC with BreakFast' },
+                        { label: 'Non-AC', value: 'Non-AC' },
                     ].map(({ label, value }) => (
                         <button
                             key={value}

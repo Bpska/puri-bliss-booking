@@ -70,9 +70,32 @@ export const PaymentModal = ({ isOpen, onClose, roomName, roomPrice }: PaymentMo
                         </button>
                     </div>
                     {roomName && (
-                        <div className="bg-white/10 rounded-xl px-3 py-2 flex items-center justify-between">
-                            <span className="text-white/80 text-sm">{roomName}</span>
-                            {roomPrice && <span className="text-[#F59820] font-bold">₹{roomPrice.toLocaleString()}/night</span>}
+                        <div className="bg-white/10 rounded-xl px-4 py-3 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-white/80 text-sm">{roomName}</span>
+                                {roomPrice && <span className="text-white/60 text-sm">₹{roomPrice.toLocaleString()}/night</span>}
+                            </div>
+                            {roomPrice && (
+                                <>
+                                    <div className="border-t border-white/10 pt-2 space-y-1">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-white/50 text-xs">Room Tariff</span>
+                                            <span className="text-white/70 text-xs">₹{roomPrice.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-white/50 text-xs">GST (5%)</span>
+                                            <span className="text-white/70 text-xs">₹{Math.round(roomPrice * 0.05).toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    <div className="border-t border-white/20 pt-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[#F59820] text-sm font-bold">Total Payable</span>
+                                            <span className="text-[#F59820] font-bold text-lg">₹{Math.round(roomPrice * 1.05).toLocaleString()}</span>
+                                        </div>
+                                        <p className="text-[9px] text-white/40 mt-1">* Inclusive of 5% GST as per Government norms</p>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     )}
                     {/* Tabs */}

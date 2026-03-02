@@ -146,11 +146,37 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                         <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Guests</div><div className="text-[#1A0A00] font-semibold">{guests || 1}</div></div>
                                     </div>
                                 )}
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-2 mb-3">
                                     {currentRoom.features.slice(0, 3).map((f, i) => (
                                         <span key={i} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#FFE5C0] text-[#7A5230]">{f}</span>
                                     ))}
                                     {currentRoom.features.length > 3 && <span className="text-[10px] text-[#7A5230]/60">+{currentRoom.features.length - 3} more</span>}
+                                </div>
+                                {/* Booking Fee & GST Breakdown */}
+                                <div className="bg-white/70 rounded-xl p-3 border border-[#FFE5C0]/50 space-y-1.5">
+                                    <div className="flex justify-between text-[11px]">
+                                        <span className="text-[#7A5230]">Room Tariff</span>
+                                        <span className="text-[#1A0A00] font-semibold">₹{currentRoom.price.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between text-[11px]">
+                                        <span className="text-[#7A5230]">GST (5%)</span>
+                                        <span className="text-[#1A0A00] font-semibold">₹{Math.round(currentRoom.price * 0.05).toLocaleString()}</span>
+                                    </div>
+                                    <div className="border-t border-[#FFE5C0] pt-1.5 flex justify-between text-sm">
+                                        <span className="font-bold text-[#1A0A00]">Total</span>
+                                        <span className="font-bold text-[#1A0A00]">₹{Math.round(currentRoom.price * 1.05).toLocaleString()}/night</span>
+                                    </div>
+                                    <div className="border-t border-[#E8760A]/20 pt-2 mt-1">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="font-bold text-[#E8760A]">🔒 Booking Fee (Advance)</span>
+                                            <span className="font-bold text-[#E8760A] text-lg">₹{Math.round(currentRoom.price * 1.05 * 0.3).toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between text-[11px] mt-0.5">
+                                            <span className="text-[#7A5230]">Remaining (pay at check-in)</span>
+                                            <span className="text-[#7A5230] font-semibold">₹{Math.round(currentRoom.price * 1.05 * 0.7).toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-[8px] text-[#7A5230]/50">* 30% advance booking fee required. Remaining payable at check-in. Incl. 5% GST.</p>
                                 </div>
                             </div>
                             <div className="space-y-1.5">
@@ -214,23 +240,32 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                             </div>
 
                             <div className="pt-2 space-y-3">
-                                <div className="flex gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={onClose}
-                                        className="flex-1 px-4 py-4 rounded-xl font-bold text-base border border-[#FFE5C0] text-[#7A5230] hover:bg-[#FFF2E0] transition-all active:scale-[0.98]"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="flex-[2] bg-gradient-to-r from-[#E8760A] to-[#F59820] text-white py-4 rounded-xl font-bold text-base hover:shadow-lg active:scale-[0.98] transition-all"
-                                    >
-                                        Confirm Booking
-                                    </button>
-                                </div>
+                                {/* Primary: Pay Booking Fee */}
+                                <button
+                                    type="submit"
+                                    className="w-full bg-gradient-to-r from-[#E8760A] to-[#F59820] text-white py-4 rounded-xl font-bold text-base hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                                >
+                                    💳 Pay Booking Fee — ₹{Math.round(currentRoom.price * 1.05 * 0.3).toLocaleString()}
+                                </button>
+
+                                {/* Direct Pay Full Amount */}
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPayment(true)}
+                                    className="w-full bg-[#1A0A00] text-white py-3.5 rounded-xl font-bold text-sm hover:bg-[#3D1C00] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-[#3D1C00]"
+                                >
+                                    🏦 Pay Full Amount — ₹{Math.round(currentRoom.price * 1.05).toLocaleString()}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="w-full py-2 text-xs font-semibold text-[#7A5230]/60 hover:text-[#7A5230] transition-colors"
+                                >
+                                    Cancel
+                                </button>
                                 <p className="text-[10px] text-center text-[#7A5230]/60 italic">
-                                    By clicking confirm, you agree to our booking policies.
+                                    By proceeding, you agree to our booking policies.
                                 </p>
                             </div>
                         </form>

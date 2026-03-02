@@ -99,6 +99,7 @@ export interface Settings {
     rooms_full: boolean;
     total_rooms: number;
     full_rooms: number;
+    hero_images?: { src: string; title: string; subtitle?: string }[];
 }
 
 // ─── Bookings ─────────────────────────────────────────────
@@ -163,6 +164,14 @@ export async function addRoom(data: Partial<AdminRoom>): Promise<AdminRoom> {
 export async function deleteRoom(roomId: number): Promise<void> {
     await apiFetch<void>(`/rooms/${roomId}`, {
         method: 'DELETE', headers: authHeaders(),
+    });
+}
+
+export async function updateRoom(roomId: number, data: Partial<AdminRoom>): Promise<AdminRoom> {
+    return apiFetch<AdminRoom>(`/rooms/${roomId}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify(data),
     });
 }
 

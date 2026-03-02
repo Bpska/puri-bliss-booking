@@ -13,6 +13,7 @@ export const BottomNav = ({ page, setPage }: BottomNavProps) => (
                 { id: 'home' as PageId, icon: HomeIcon, label: 'Home' },
                 { id: 'rooms' as PageId, icon: Bed, label: 'Rooms' },
                 { id: 'detail' as PageId, icon: Hotel, label: 'Book' },
+                { id: 'about' as PageId, icon: MessageSquare, label: 'About' },
                 { id: 'contact' as PageId, icon: MessageSquare, label: 'Contact' },
             ].map(({ id, icon: Icon, label }) => (
                 <button

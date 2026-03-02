@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ROOMS, Room } from '../data/constants';
 import { getRooms, AdminRoom } from '../data/adminStore';
 
-export type PageId = 'home' | 'rooms' | 'detail' | 'contact' | 'admin';
+export type PageId = 'home' | 'rooms' | 'detail' | 'contact' | 'admin' | 'about';
 
 export function useAppState() {
     const [page, setPage] = useState<PageId>('home');
@@ -43,20 +43,26 @@ export function useAppState() {
         return () => window.removeEventListener('hashchange', checkHash);
     }, []);
 
+    const refreshRooms = () => {
+        getRooms().then(r => setAllRooms(r)).catch(() => setAllRooms([]));
+    };
+
     // Load rooms from backend, fall back to static data
     useEffect(() => {
-        getRooms().then(r => setAllRooms(r)).catch(() => setAllRooms([]));
+        refreshRooms();
     }, []);
 
     const toggleWishlist = (id: number) => {
         setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
     };
 
-    // Use admin-merged rooms (with price overrides + custom rooms), fall back to ROOMS
+    // Use admin-merged rooms, defensively merging static ROOMS if they are missing from allRooms
     const getFilteredRooms = (): Room[] => {
-        // Map AdminRoom → Room shape for components
-        const rooms: Room[] = allRooms.length > 0
-            ? allRooms.map(r => ({
+        const rooms: Room[] = [...ROOMS]; // start with static rooms
+        // override static rooms with admin data, or append custom ones
+        for (const r of allRooms) {
+            const staticIdx = rooms.findIndex(orig => orig.id === (r.roomId ?? r.id));
+            const mapped: Room = {
                 id: r.roomId ?? r.id,
                 name: r.name,
                 type: r.type,
@@ -69,11 +75,17 @@ export function useAppState() {
                 gradient: r.gradient ?? '',
                 images: r.images && r.images.length > 0 ? r.images : (ROOMS.find(orig => orig.id === (r.roomId ?? r.id))?.images ?? []),
                 includes: r.includes ?? [],
-            }))
-            : ROOMS;
+            };
+            if (staticIdx >= 0) rooms[staticIdx] = mapped;
+            else rooms.push(mapped);
+        }
+
         if (filter === 'All Rooms') return rooms;
-        if (filter === 'AC') return rooms.filter(r => r.features.includes('Air Conditioning'));
-        if (filter === 'Non-AC') return rooms.filter(r => r.type === 'Economy');
+        const exactMatch = rooms.filter(r => r.name === filter || r.name.toLowerCase() === filter.toLowerCase());
+        if (exactMatch.length > 0) return exactMatch;
+
+        if (filter === 'AC' || filter === 'AC Room') return rooms.filter(r => r.features.includes('Air Conditioning'));
+        if (filter === 'Non-AC') return rooms.filter(r => !r.features.includes('Air Conditioning'));
         if (filter === 'Deluxe') return rooms.filter(r => r.type === 'Deluxe' || r.type === 'Suite');
         if (filter === 'Budget') return rooms.filter(r => r.price < 2000);
         return rooms;
@@ -123,5 +135,6 @@ export function useAppState() {
         menuOpen, setMenuOpen,
         getRoomImgIndex, setRoomImgIndex,
         getFilteredRooms,
+        refreshRooms
     };
 }
