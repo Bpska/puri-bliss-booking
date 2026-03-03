@@ -169,7 +169,9 @@ export const DetailPage = ({ state }: DetailPageProps) => {
                                         <button onClick={() => setGuests(Math.min(8, guests + 1))} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#E8760A] text-white flex items-center justify-center font-bold transition-transform active:scale-90 hover:bg-[#D4660A]">+</button>
                                     </div>
                                 </div>
+                                <p className="text-[10px] text-[#7A5230] mt-2 italic">* Base price for 2 members. Each extra adult costs ₹500/night. Kids under 10 stay free!</p>
                             </div>
+
                         </div>
 
                         {/* Includes */}

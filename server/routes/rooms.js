@@ -44,11 +44,11 @@ router.put('/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// DELETE /api/rooms/:id — delete a custom room (admin only)
+// DELETE /api/rooms/:id — delete a room (admin only)
 router.delete('/:id', authMiddleware, async (req, res) => {
     try {
-        const room = await Room.findOne({ where: { roomId: req.params.id, isCustom: true } });
-        if (!room) return res.status(404).json({ error: 'Custom room not found' });
+        const room = await Room.findOne({ where: { roomId: req.params.id } });
+        if (!room) return res.status(404).json({ error: 'Room not found' });
         await room.destroy();
         res.json({ message: 'Room deleted' });
     } catch (err) {

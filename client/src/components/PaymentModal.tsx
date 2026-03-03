@@ -22,8 +22,11 @@ export const PaymentModal = ({ isOpen, onClose, roomName, roomPrice }: PaymentMo
     }, [isOpen]);
 
     const handleClose = () => {
-        setAnimState('exiting');
-        setTimeout(onClose, 300);
+        const confirmClose = window.confirm("Are you sure you want to cancel your payment and go back?");
+        if (confirmClose) {
+            setAnimState('exiting');
+            setTimeout(onClose, 300);
+        }
     };
 
     const copyText = (text: string, label: string) => {

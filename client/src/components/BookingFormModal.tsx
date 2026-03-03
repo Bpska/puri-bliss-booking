@@ -23,6 +23,9 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
     const [submitted, setSubmitted] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
     const [roomsFull, setRoomsFull] = useState(false);
+    const [numAdults, setNumAdults] = useState(guests || 2);
+    const [numKids, setNumKids] = useState(0);
+
 
     // Load availability from backend settings
     useEffect(() => {
@@ -56,7 +59,13 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
         );
     }
 
+    const extraAdults = Math.max(0, numAdults - 2);
+    const extraCharge = extraAdults * 500;
+    const adjustedPrice = (currentRoom?.price || 0) + extraCharge;
+    const totalWithGst = Math.round(adjustedPrice * 1.05);
+
     const handleSubmit = async (e: React.FormEvent) => {
+
         e.preventDefault();
         try {
             await createBooking({
@@ -67,8 +76,10 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                 userPhone: formData.phone,
                 checkIn: checkIn,
                 checkOut: checkOut,
-                guests: guests,
+                guests: numAdults + numKids,
+                notes: `Adults: ${numAdults}, Kids: ${numKids}`,
             });
+
         } catch {
             // If backend unavailable, still show success UX
             console.warn('Could not save booking to server, continuing...');
@@ -143,9 +154,49 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                         <div className="text-[#E8760A] text-xs font-bold">→</div>
                                         <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Check-out</div><div className="text-[#1A0A00] font-semibold">{checkOut}</div></div>
                                         <div className="border-l border-[#FFE5C0] h-6 mx-1"></div>
-                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Guests</div><div className="text-[#1A0A00] font-semibold">{guests || 1}</div></div>
+                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Total Guests</div><div className="text-[#1A0A00] font-semibold">{numAdults + numKids}</div></div>
                                     </div>
                                 )}
+
+                                {/* Guest Selection */}
+                                <div className="grid grid-cols-2 gap-3 mb-3">
+                                    <div className="bg-white/60 p-2 rounded-xl border border-[#FFE5C0]/50">
+                                        <label className="text-[9px] font-bold text-[#7A5230] uppercase block mb-1 text-center">Adults (10+ Years)</label>
+                                        <div className="flex items-center justify-between px-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setNumAdults(Math.max(1, numAdults - 1))}
+                                                className="w-6 h-6 rounded-full bg-white border border-[#FFE5C0] flex items-center justify-center text-[#E8760A] font-bold"
+                                            >-</button>
+                                            <span className="text-sm font-bold text-[#1A0A00]">{numAdults}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNumAdults(numAdults + 1)}
+                                                className="w-6 h-6 rounded-full bg-white border border-[#FFE5C0] flex items-center justify-center text-[#E8760A] font-bold"
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                    <div className="bg-white/60 p-2 rounded-xl border border-[#FFE5C0]/50">
+                                        <label className="text-[9px] font-bold text-[#7A5230] uppercase block mb-1 text-center">Kids (Under 10)</label>
+                                        <div className="flex items-center justify-between px-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setNumKids(Math.max(0, numKids - 1))}
+                                                className="w-6 h-6 rounded-full bg-white border border-[#FFE5C0] flex items-center justify-center text-[#E8760A] font-bold"
+                                            >-</button>
+                                            <span className="text-sm font-bold text-[#1A0A00]">{numKids}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setNumKids(numKids + 1)}
+                                                className="w-6 h-6 rounded-full bg-white border border-[#FFE5C0] flex items-center justify-center text-[#E8760A] font-bold"
+                                            >+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-[9px] text-[#7A5230] italic mb-3 px-1">
+                                    * Free for kids under 10. All prices are for 2 members only. Extra members charged at ₹500/night.
+                                </div>
+
                                 <div className="flex flex-wrap gap-2 mb-3">
                                     {currentRoom.features.slice(0, 3).map((f, i) => (
                                         <span key={i} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#FFE5C0] text-[#7A5230]">{f}</span>
@@ -155,29 +206,36 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                 {/* Booking Fee & GST Breakdown */}
                                 <div className="bg-white/70 rounded-xl p-3 border border-[#FFE5C0]/50 space-y-1.5">
                                     <div className="flex justify-between text-[11px]">
-                                        <span className="text-[#7A5230]">Room Tariff</span>
+                                        <span className="text-[#7A5230]">Room Tariff (Base for 2)</span>
                                         <span className="text-[#1A0A00] font-semibold">₹{currentRoom.price.toLocaleString()}</span>
                                     </div>
+                                    {extraCharge > 0 && (
+                                        <div className="flex justify-between text-[11px]">
+                                            <span className="text-[#7A5230] italic">Extra Member Charge ({extraAdults} × ₹500)</span>
+                                            <span className="text-[#1A0A00] font-semibold">₹{extraCharge.toLocaleString()}</span>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between text-[11px]">
                                         <span className="text-[#7A5230]">GST (5%)</span>
-                                        <span className="text-[#1A0A00] font-semibold">₹{Math.round(currentRoom.price * 0.05).toLocaleString()}</span>
+                                        <span className="text-[#1A0A00] font-semibold">₹{Math.round(adjustedPrice * 0.05).toLocaleString()}</span>
                                     </div>
                                     <div className="border-t border-[#FFE5C0] pt-1.5 flex justify-between text-sm">
                                         <span className="font-bold text-[#1A0A00]">Total</span>
-                                        <span className="font-bold text-[#1A0A00]">₹{Math.round(currentRoom.price * 1.05).toLocaleString()}/night</span>
+                                        <span className="font-bold text-[#1A0A00]">₹{totalWithGst.toLocaleString()}/night</span>
                                     </div>
                                     <div className="border-t border-[#E8760A]/20 pt-2 mt-1">
                                         <div className="flex justify-between text-sm">
                                             <span className="font-bold text-[#E8760A]">🔒 Booking Fee (Advance)</span>
-                                            <span className="font-bold text-[#E8760A] text-lg">₹{Math.round(currentRoom.price * 1.05 * 0.3).toLocaleString()}</span>
+                                            <span className="font-bold text-[#E8760A] text-lg">₹{Math.round(totalWithGst * 0.3).toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between text-[11px] mt-0.5">
                                             <span className="text-[#7A5230]">Remaining (pay at check-in)</span>
-                                            <span className="text-[#7A5230] font-semibold">₹{Math.round(currentRoom.price * 1.05 * 0.7).toLocaleString()}</span>
+                                            <span className="text-[#7A5230] font-semibold">₹{Math.round(totalWithGst * 0.7).toLocaleString()}</span>
                                         </div>
                                     </div>
-                                    <p className="text-[8px] text-[#7A5230]/50">* 30% advance booking fee required. Remaining payable at check-in. Incl. 5% GST.</p>
+                                    <p className="text-[8px] text-[#7A5230]/50">* 30% advance booking fee required. Remaining payable at check-in. Kids under 10 stay free. Base price is for 2 members. Each extra adult costs ₹500/night.</p>
                                 </div>
+
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-[#7A5230] uppercase ml-1">Full Name</label>
@@ -245,7 +303,7 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                     type="submit"
                                     className="w-full bg-gradient-to-r from-[#E8760A] to-[#F59820] text-white py-4 rounded-xl font-bold text-base hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                                 >
-                                    💳 Pay Booking Fee — ₹{Math.round(currentRoom.price * 1.05 * 0.3).toLocaleString()}
+                                    💳 Pay Booking Fee — ₹{Math.round(totalWithGst * 0.3).toLocaleString()}
                                 </button>
 
                                 {/* Direct Pay Full Amount */}
@@ -254,8 +312,9 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                     onClick={() => setShowPayment(true)}
                                     className="w-full bg-[#1A0A00] text-white py-3.5 rounded-xl font-bold text-sm hover:bg-[#3D1C00] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-[#3D1C00]"
                                 >
-                                    🏦 Pay Full Amount — ₹{Math.round(currentRoom.price * 1.05).toLocaleString()}
+                                    🏦 Pay Full Amount — ₹{totalWithGst.toLocaleString()}
                                 </button>
+
 
                                 <button
                                     type="button"
@@ -277,8 +336,9 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                 isOpen={showPayment}
                 onClose={handlePaymentClose}
                 roomName={currentRoom.name}
-                roomPrice={currentRoom.price}
+                roomPrice={adjustedPrice}
             />
+
         </div >
     );
 };
