@@ -5,7 +5,7 @@ import {
     getRooms, addRoom, deleteRoom, savePrices, updateRoom,
     getSettings, updateSettings,
     login, isLoggedIn, clearToken,
-    Offer, AdminRoom, Booking, BookingStatus, Settings,
+    Offer, AdminRoom, Booking, BookingStatus, Settings, FestivalRule,
 } from '../data/adminStore';
 import {
     ArrowLeft, Save, Plus, Trash2, ToggleLeft, ToggleRight, Edit3, DollarSign,
@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import hotelLogoAdmin from '../images/hotel-logo-2.jpg';
 
-type Tab = 'prices' | 'addRoom' | 'offers' | 'bookings' | 'settings' | 'hero';
+type Tab = 'prices' | 'addRoom' | 'offers' | 'bookings' | 'settings' | 'hero' | 'festival';
 
 interface AdminPageProps {
     onBack: () => void;
@@ -119,6 +119,11 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
     // ─── Settings state ──────────────────────────────────
     const [settings, setSettings] = useState<Settings>({ rooms_full: false, total_rooms: 12, full_rooms: 0 });
 
+    // ─── Festival Pricing state ───────────────────────────
+    const [festivalRules, setFestivalRules] = useState<FestivalRule[]>([]);
+    const [newFestival, setNewFestival] = useState({ name: '', startDate: '', endDate: '', multiplier: '1.5' });
+    const [festivalSaved, setFestivalSaved] = useState(false);
+
     const loadAll = async () => {
         setLoading(true);
         try {
@@ -131,6 +136,8 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
             const overrides: Record<number, number> = {};
             r.forEach(room => { if (room.priceOverride != null) overrides[room.roomId] = room.priceOverride; });
             setPriceOverrides(overrides);
+            // Load festival rules from settings
+            if (s.festival_pricing) setFestivalRules(s.festival_pricing);
         } catch (err) {
             console.warn('API not connected or token invalid');
             throw err; // Propagate error to trigger logout
@@ -331,6 +338,43 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
         } catch { alert('Failed to update settings'); }
     };
 
+    // ─── Festival Pricing handlers ────────────────────────
+    const handleAddFestival = async () => {
+        if (!newFestival.name || !newFestival.startDate || !newFestival.endDate) return;
+        const rule: FestivalRule = {
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+            name: newFestival.name,
+            startDate: newFestival.startDate,
+            endDate: newFestival.endDate,
+            multiplier: parseFloat(newFestival.multiplier) || 1.5,
+            active: true,
+        };
+        const updated = [...festivalRules, rule];
+        setFestivalRules(updated);
+        setNewFestival({ name: '', startDate: '', endDate: '', multiplier: '1.5' });
+        try {
+            await updateSettings({ festival_pricing: updated });
+            setFestivalSaved(true);
+            setTimeout(() => setFestivalSaved(false), 2000);
+        } catch { alert('Failed to save festival rule'); }
+    };
+
+    const handleToggleFestival = async (id: string) => {
+        const updated = festivalRules.map(r => r.id === id ? { ...r, active: !r.active } : r);
+        setFestivalRules(updated);
+        try {
+            await updateSettings({ festival_pricing: updated });
+        } catch { alert('Failed to toggle festival rule'); }
+    };
+
+    const handleDeleteFestival = async (id: string) => {
+        const updated = festivalRules.filter(r => r.id !== id);
+        setFestivalRules(updated);
+        try {
+            await updateSettings({ festival_pricing: updated });
+        } catch { alert('Failed to delete festival rule'); }
+    };
+
     // ─── Hero Config handlers ─────────────────────────────
     const heroFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -394,6 +438,7 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
         { id: 'prices', label: 'Room Prices', icon: <DollarSign size={18} /> },
         { id: 'addRoom', label: 'Add Room', icon: <BedDouble size={18} /> },
         { id: 'offers', label: 'Offers', icon: <Megaphone size={18} /> },
+        { id: 'festival', label: 'Festival Pricing', icon: <Calendar size={18} /> },
         { id: 'hero', label: 'Hero Config', icon: <ImageIcon size={18} /> },
         { id: 'settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
     ];
@@ -919,6 +964,139 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
                                         ))}
                                     </div>
                                 )}
+                            </div>
+                        )}
+
+                        {/* ── Tab: Festival Pricing ──────────────────── */}
+                        {tab === 'festival' && (
+                            <div className="animate-fadeUp max-w-3xl">
+                                <div className="flex items-center justify-between mb-6">
+                                    <div>
+                                        <h2 className="font-['Playfair_Display'] text-2xl font-bold text-white">🎉 Festival Season Pricing</h2>
+                                        <p className="text-sm text-[#7A5230]">Set date-wise price multipliers for festival seasons — saved to database</p>
+                                    </div>
+                                    {festivalSaved && (
+                                        <span className="bg-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg animate-fadeUp">Saved ✓</span>
+                                    )}
+                                </div>
+
+                                {/* Add New Rule Form */}
+                                <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] p-5 mb-6">
+                                    <h3 className="text-xs font-bold text-[#7A5230] uppercase tracking-wider mb-4">Add New Festival Rule</h3>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-[10px] text-[#7A5230] uppercase tracking-wider mb-1 font-bold">Festival Name</label>
+                                            <input type="text" placeholder="e.g. Rath Yatra Season" value={newFestival.name}
+                                                onChange={e => setNewFestival(p => ({ ...p, name: e.target.value }))}
+                                                className="w-full bg-[#0D0D0D] border border-[#3D1C00] rounded-xl px-4 py-3 text-white placeholder-[#5A5A5A] focus:outline-none focus:border-[#E8760A] transition-colors" />
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <div>
+                                                <label className="block text-[10px] text-[#7A5230] uppercase tracking-wider mb-1 font-bold">Start Date</label>
+                                                <input type="date" value={newFestival.startDate}
+                                                    onChange={e => setNewFestival(p => ({ ...p, startDate: e.target.value }))}
+                                                    className="w-full bg-[#0D0D0D] border border-[#3D1C00] rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#E8760A] transition-colors" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] text-[#7A5230] uppercase tracking-wider mb-1 font-bold">End Date</label>
+                                                <input type="date" value={newFestival.endDate}
+                                                    onChange={e => setNewFestival(p => ({ ...p, endDate: e.target.value }))}
+                                                    min={newFestival.startDate}
+                                                    className="w-full bg-[#0D0D0D] border border-[#3D1C00] rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#E8760A] transition-colors" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] text-[#7A5230] uppercase tracking-wider mb-1 font-bold">Price Multiplier</label>
+                                                <input type="number" step="0.1" min="1" placeholder="1.5" value={newFestival.multiplier}
+                                                    onChange={e => setNewFestival(p => ({ ...p, multiplier: e.target.value }))}
+                                                    className="w-full bg-[#0D0D0D] border border-[#3D1C00] rounded-xl px-3 py-3 text-white text-lg font-bold focus:outline-none focus:border-[#E8760A] transition-colors" />
+                                                <p className="text-[9px] text-[#5A5A5A] mt-1">1.5 = 50% increase, 2.0 = double price</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={handleAddFestival}
+                                            disabled={!newFestival.name || !newFestival.startDate || !newFestival.endDate}
+                                            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition-all ${!newFestival.name || !newFestival.startDate || !newFestival.endDate ? 'bg-[#2A2A2A] text-[#5A5A5A] cursor-not-allowed' : 'bg-gradient-to-r from-[#E8760A] to-[#F59820] text-white hover:shadow-lg active:scale-[0.98]'}`}>
+                                            <Plus size={16} /> Add Festival Rule
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Existing Rules */}
+                                {festivalRules.length === 0 ? (
+                                    <div className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] p-8 text-center">
+                                        <div className="text-4xl mb-3">🎪</div>
+                                        <p className="text-[#7A5230] text-sm">No festival pricing rules yet. Add one above to set date-wise pricing.</p>
+                                        <p className="text-[10px] text-[#5A5A5A] mt-2">Normal room prices will apply until you create a rule.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <h3 className="text-xs font-bold text-[#7A5230] uppercase tracking-wider mb-2">Active Rules ({festivalRules.filter(r => r.active).length} of {festivalRules.length})</h3>
+                                        {festivalRules.map(rule => {
+                                            const now = new Date().toISOString().split('T')[0];
+                                            const isLive = rule.active && rule.startDate <= now && now <= rule.endDate;
+                                            const isPast = rule.endDate < now;
+                                            return (
+                                                <div key={rule.id} className={`bg-[#1A1A1A] rounded-2xl border p-5 transition-all ${isLive ? 'border-green-500/40 shadow-lg shadow-green-500/5' :
+                                                        isPast ? 'border-[#2A2A2A] opacity-50' :
+                                                            rule.active ? 'border-[#E8760A]/30' : 'border-[#2A2A2A] opacity-60'
+                                                    }`}>
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                                                <h4 className="text-base font-bold text-white">{rule.name}</h4>
+                                                                {isLive && (
+                                                                    <span className="bg-green-500/20 text-green-400 border border-green-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                                                                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" /> Live Now
+                                                                    </span>
+                                                                )}
+                                                                {isPast && (
+                                                                    <span className="bg-[#2A2A2A] text-[#5A5A5A] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Expired</span>
+                                                                )}
+                                                                {!rule.active && !isPast && (
+                                                                    <span className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Paused</span>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex items-center gap-4 text-sm text-[#7A5230]">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <Calendar size={14} className="text-[#E8760A]" />
+                                                                    <span>{new Date(rule.startDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                                                    <span className="text-[#5A5A5A]">→</span>
+                                                                    <span>{new Date(rule.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="mt-2 flex items-center gap-2">
+                                                                <span className="bg-[#E8760A]/20 text-[#F59820] text-xs font-bold px-2.5 py-1 rounded-lg">{rule.multiplier}× Price</span>
+                                                                <span className="text-[10px] text-[#5A5A5A]">({Math.round((rule.multiplier - 1) * 100)}% increase)</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <button onClick={() => handleToggleFestival(rule.id)} title={rule.active ? 'Pause' : 'Activate'} className="flex-shrink-0">
+                                                                {rule.active
+                                                                    ? <ToggleRight size={28} className="text-[#E8760A]" />
+                                                                    : <ToggleLeft size={28} className="text-[#5A5A5A]" />}
+                                                            </button>
+                                                            <button onClick={() => handleDeleteFestival(rule.id)}
+                                                                className="w-9 h-9 bg-red-900/30 rounded-lg flex items-center justify-center text-red-400 hover:bg-red-900/60 transition-colors flex-shrink-0">
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+
+                                {/* How it works info */}
+                                <div className="mt-6 bg-[#0D0D0D] rounded-2xl border border-[#3D1C00] p-5">
+                                    <h3 className="text-sm font-bold text-[#F59820] mb-3">💡 How Festival Pricing Works</h3>
+                                    <ul className="space-y-2 text-xs text-[#7A5230]">
+                                        <li>• When a customer's <b className="text-white">check-in date</b> falls within an active festival period, the room price is multiplied.</li>
+                                        <li>• Example: If base price is ₹2,000 and multiplier is 1.5×, festival price = <b className="text-white">₹3,000</b></li>
+                                        <li>• If multiple festivals overlap, the <b className="text-white">highest multiplier</b> applies.</li>
+                                        <li>• Outside festival dates, <b className="text-white">normal pricing</b> applies automatically.</li>
+                                        <li>• 5% GST is calculated on top of the final festival-adjusted price.</li>
+                                    </ul>
+                                </div>
                             </div>
                         )}
 

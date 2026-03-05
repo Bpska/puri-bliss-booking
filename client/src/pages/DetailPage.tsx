@@ -13,6 +13,7 @@ export const DetailPage = ({ state }: DetailPageProps) => {
     const { setPage, selectedRoom, guests, setGuests, wishlist, toggleWishlist } = state;
     const [detailImgIdx, setDetailImgIdx] = useState(0);
     const [showBooking, setShowBooking] = useState(false);
+    const [showGuestPopup, setShowGuestPopup] = useState(false);
 
     const prev = () => setDetailImgIdx(i => (i - 1 + selectedRoom.images.length) % selectedRoom.images.length);
     const next = () => setDetailImgIdx(i => (i + 1) % selectedRoom.images.length);
@@ -161,18 +162,66 @@ export const DetailPage = ({ state }: DetailPageProps) => {
                                 </div>
                             </div>
                             <div className="bg-white rounded-xl border border-[#FFE5C0] p-4">
-                                <label className="text-xs md:text-sm text-[#7A5230] mb-2 block">Guests</label>
+                                <label className="text-xs md:text-sm text-[#7A5230] mb-2 block">Adults</label>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm md:text-base font-semibold text-[#1A0A00]">{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
+                                    <span className="text-sm md:text-base font-semibold text-[#1A0A00]">{guests} {guests === 1 ? 'Adult' : 'Adults'}</span>
                                     <div className="flex items-center gap-3">
                                         <button onClick={() => setGuests(Math.max(1, guests - 1))} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-[#E8760A] text-[#E8760A] flex items-center justify-center font-bold transition-transform active:scale-90 hover:bg-[#FFF2E0]">−</button>
-                                        <button onClick={() => setGuests(Math.min(8, guests + 1))} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#E8760A] text-white flex items-center justify-center font-bold transition-transform active:scale-90 hover:bg-[#D4660A]">+</button>
+                                        <button onClick={() => { if (guests >= 3) { setShowGuestPopup(true); } else { setGuests(guests + 1); } }} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#E8760A] text-white flex items-center justify-center font-bold transition-transform active:scale-90 hover:bg-[#D4660A]">+</button>
                                     </div>
                                 </div>
-                                <p className="text-[10px] text-[#7A5230] mt-2 italic">* Base price for 2 members. Each extra adult costs ₹500/night. Kids under 10 stay free!</p>
+                                {/* Room capacity info */}
+                                <div className="mt-3 flex items-start gap-2 bg-[#FFF8F0] rounded-lg p-2.5 border border-[#FFE5C0]/50">
+                                    <span className="text-sm leading-none">ℹ️</span>
+                                    <p className="text-[10px] text-[#7A5230] leading-relaxed">Max <strong>3 Adults</strong> per room. Children under 10 years can stay with parents at no extra charge.</p>
+                                </div>
                             </div>
-
                         </div>
+
+                        {/* Guest Limit Popup */}
+                        {showGuestPopup && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm animate-fadeIn" onClick={() => setShowGuestPopup(false)}>
+                                <div className="w-full max-w-sm bg-[#FFFCF7] rounded-2xl shadow-2xl overflow-hidden animate-fadeUp" onClick={e => e.stopPropagation()}>
+                                    {/* Popup Header */}
+                                    <div className="bg-gradient-to-r from-[#1A0A00] to-[#3D1C00] px-5 py-4 text-center">
+                                        <div className="text-3xl mb-2">🏨</div>
+                                        <h3 className="font-['Playfair_Display'] text-lg font-bold text-white">Room Capacity Reached</h3>
+                                    </div>
+                                    {/* Popup Body */}
+                                    <div className="p-5 space-y-4">
+                                        <div className="bg-[#FFF2E0] rounded-xl p-4 border border-[#FFE5C0]">
+                                            <h4 className="text-sm font-bold text-[#1A0A00] mb-2">Room Policy</h4>
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-6 h-6 bg-[#E8760A] text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                                                    <p className="text-xs text-[#7A5230]"><strong>Maximum 3 Adults</strong> per single room</p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="w-6 h-6 bg-[#25D366] text-white rounded-full flex items-center justify-center text-xs">👶</span>
+                                                    <p className="text-xs text-[#7A5230]">Children <strong>under 10 years</strong> can stay free with parents</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-[#7A5230] text-center">For more than 3 adults, please book an additional room.</p>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => setShowGuestPopup(false)}
+                                                className="flex-1 px-4 py-3 rounded-xl font-bold text-sm border border-[#FFE5C0] text-[#7A5230] hover:bg-[#FFF2E0] transition-all active:scale-[0.98]"
+                                            >
+                                                OK, Got It
+                                            </button>
+                                            <button
+                                                onClick={() => { setShowGuestPopup(false); setPage('rooms'); }}
+                                                className="flex-1 px-4 py-3 rounded-xl font-bold text-sm text-white transition-all active:scale-[0.98] hover:shadow-lg"
+                                                style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}
+                                            >
+                                                Browse Rooms
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Includes */}
                         <div className="mb-5">

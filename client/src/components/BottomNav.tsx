@@ -29,3 +29,4 @@ export const BottomNav = ({ page, setPage }: BottomNavProps) => (
         </div>
     </div>
 );
+

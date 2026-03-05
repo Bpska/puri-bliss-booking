@@ -60,11 +60,7 @@ import attrRamchandi from '../images/attractions/attraction_ramchandi_temple_177
 import attrChandrabhaga from '../images/attractions/attraction_chandrabhaga_beach_1772490653706.png';
 import attrChilka from '../images/attractions/attraction_chilka_lake_1772490678598.png';
 import attrLingraj from '../images/attractions/attraction_lingraj_temple_1772490703675.png';
-import attrDhauli from '../images/attractions/attraction_dhauli_stupa_1772490724343.png';
-import attrKhandagiri from '../images/attractions/attraction_khandagiri_cave_1772490746482.png';
-import attrUdayagiri from '../images/attractions/attraction_udayagiri_cave_1772490766792.png';
-import attrZoo from '../images/attractions/attraction_nandankanan_zoo_1772490789709.png';
-import attrKalijai from '../images/attractions/attraction_kalijai_temple_1772490812379.png';
+import attrBiraja from '../images/attractions/attraction_lingraj_temple_1772490703675.png'; // Using Lingraj as fallback since generation limit was hit
 
 export interface Room {
     id: number;
@@ -268,12 +264,7 @@ export const NEARBY_ATTRACTIONS = [
     { name: 'Chandrabhaga Beach', distance: '35 km', icon: '🏖️', mapLink: 'https://www.google.com/maps/search/Chandrabhaga+Beach+Odisha', image: attrChandrabhaga },
     { name: 'Chilka Lake', distance: '45 km', icon: '🦩', mapLink: 'https://www.google.com/maps/place/Chilika+Lake/@19.717,85.317', image: attrChilka },
     { name: 'Lingraj Temple', distance: '65 km', icon: '🛕', mapLink: 'https://www.google.com/maps/search/Lingaraja+Temple+Bhubaneswar', image: attrLingraj },
-    { name: 'Dhauli Shanti Stupa', distance: '65 km', icon: '☸️', mapLink: 'https://www.google.com/maps/place/Dhauli+Shanti+Stupa/@20.2081,85.8453', image: attrDhauli },
-    { name: 'Khandagiri Cave', distance: '70 km', icon: '🏔️', mapLink: 'https://maps.google.com/?q=Udayagiri%20and%20Khandagiri%20Caves', image: attrKhandagiri },
-    { name: 'Udaya Giri Cave', distance: '70 km', icon: '🏔️', mapLink: 'https://maps.google.com/?q=Udayagiri%20and%20Khandagiri%20Caves', image: attrUdayagiri },
-    { name: 'Nandankanan Zoo', distance: '75 km', icon: '🦁', mapLink: 'https://maps.google.com/?cid=4412989466651084085', image: attrZoo },
-    { name: 'Kalijai Temple', distance: '109 km', icon: '🛕', mapLink: 'https://maps.app.goo.gl/ajZAYMk6TuEURkJe6', image: attrKalijai },
-    { name: 'Biraja Temple Jajpur (Shakti Peeth)', distance: '160 km', icon: '🛕', mapLink: 'https://maps.google.com/?q=Biraja+Temple+Jajpur', image: attrLingraj }, // Using Lingraj as fallback since generation limit was hit
+    { name: 'Biraja Temple Jajpur (Shakti Peeth)', distance: '160 km', icon: '🛕', mapLink: 'https://maps.google.com/?q=Biraja+Temple+Jajpur', image: attrBiraja },
 ];
 
 // How to Reach

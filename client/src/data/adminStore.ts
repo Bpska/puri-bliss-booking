@@ -95,11 +95,21 @@ export interface AdminRoom {
     isCustom: boolean;
 }
 
+export interface FestivalRule {
+    id: string;
+    name: string;
+    startDate: string;
+    endDate: string;
+    multiplier: number;
+    active: boolean;
+}
+
 export interface Settings {
     rooms_full: boolean;
     total_rooms: number;
     full_rooms: number;
     hero_images?: { src: string; title: string; subtitle?: string }[];
+    festival_pricing?: FestivalRule[];
 }
 
 // ─── Bookings ─────────────────────────────────────────────

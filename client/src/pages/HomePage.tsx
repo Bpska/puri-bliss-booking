@@ -5,7 +5,6 @@ import { AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooftop, HER
 import heroNightExterior from '../images/hero-night-exterior.jpg';
 import { GoogleReviews } from '../components/GoogleReviews';
 import { useAppState } from '../hooks/useAppState';
-import { BookingFormModal } from '../components/BookingFormModal';
 import { getSettings } from '../data/adminStore';
 import { Room } from '../data/constants';
 import gsap from 'gsap';
@@ -15,10 +14,9 @@ interface HomePageProps {
 }
 
 export const HomePage = ({ state }: HomePageProps) => {
-    const { setPage, filter, getFilteredRooms, setMenuOpen } = state;
+    const { setPage, filter, getFilteredRooms, setMenuOpen, openBookingModal } = state;
     const [selectedImage, setSelectedImage] = useState<{ src: string, label: string } | null>(null);
     const [heroIdx, setHeroIdx] = useState(0);
-    const [bookingRoom, setBookingRoom] = useState<Room | null>(null);
     const [galleryFilter, setGalleryFilter] = useState('All');
     const [roomsFull, setRoomsFull] = useState(false);
     const [availableCount, setAvailableCount] = useState<number | null>(null);
@@ -289,17 +287,20 @@ export const HomePage = ({ state }: HomePageProps) => {
 
                     {/* Social Media Links */}
                     <div className="flex items-center gap-3 mb-5">
+                        <a href={`https://wa.me/${HOTEL_INFO.whatsapp.replace('+', '')}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-[#25D366] transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg border border-white/20">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M11.944 0A12 12 0 000 12a12 12 0 001.927 6.481L0 24l5.69-1.892A11.91 11.91 0 0011.944 24c6.627 0 12-5.373 12-12S18.571 0 11.944 0zm0 22a9.927 9.927 0 01-5.127-1.42l-.367-.218-3.793 1.258 1.012-3.69-.24-.383a9.92 9.92 0 01-1.485-5.547c0-5.514 4.486-10 10-10s10 4.486 10 10-4.486 10-10 10zm5.494-7.513c-.302-.151-1.78-.88-2.056-.98-.276-.1-.477-.151-.678.151-.201.302-.778.98-.954 1.181-.176.201-.352.226-.654.075-.302-.151-1.27-.468-2.42-1.493-.895-.798-1.503-1.785-1.679-2.087-.176-.302-.019-.465.132-.615.136-.135.302-.352.453-.528.151-.176.201-.302.302-.503.1-.201.05-.377-.025-.528-.075-.151-.678-1.635-.93-2.238-.246-.59-.496-.51-.678-.52-.176-.01-.377-.01-.578-.01-.201 0-.528.075-.804.377-.276.302-1.055 1.03-1.055 2.513s1.08 2.915 1.231 3.116c.151.201 2.13 3.25 5.158 4.557.72.311 1.28.497 1.717.636.722.23 1.38.197 1.898.12.58-.086 1.78-.729 2.03-1.433.251-.704.251-1.307.176-1.433-.075-.126-.276-.201-.578-.352z" /></svg>
+                        </a>
                         <a href="https://www.instagram.com/amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg" style={{ background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)' }}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
                         </a>
+                        <a href="https://www.youtube.com/@amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-[#FF0000] transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg border border-white/20">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" /></svg>
+                        </a>
+                        <a href="https://www.facebook.com/amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-[#1877F2] transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg border border-white/20">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                        </a>
                         <a href="https://x.com/amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-black transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg border border-white/20">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-                        </a>
-                        <a href="https://www.youtube.com/@amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-[#FF0000] transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
-                        </a>
-                        <a href="https://www.facebook.com/amrutabhojana" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center bg-[#1877F2] transition-all duration-300 hover:scale-110 hover:-translate-y-1 shadow-lg">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                         </a>
                     </div>
 
@@ -315,6 +316,36 @@ export const HomePage = ({ state }: HomePageProps) => {
                 </div>
             </div>
 
+            {/* Booking card moved beneath the hero section */}
+            <div className="mx-4 md:mx-12 lg:mx-20 relative z-20 -mt-8 mb-6">
+                <div className="bg-white rounded-2xl shadow-lg p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 max-w-5xl mx-auto border border-[#FFE5C0]/50">
+                    <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:divide-x divide-[#FFE5C0]">
+                        <div className="md:px-4">
+                            <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Check-in</label>
+                            <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">20 Feb 2025</div>
+                        </div>
+                        <div className="md:px-4">
+                            <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Check-out</label>
+                            <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">21 Feb 2025</div>
+                        </div>
+                        <div className="col-span-2 md:col-span-1 border-t md:border-t-0 border-[#FFE5C0] pt-3 md:pt-0 md:px-4">
+                            <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Guests & Rooms</label>
+                            <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">2 Adults · 1 Room</div>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => {
+                            setPage('rooms');
+                            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                        }}
+                        className="w-full md:w-auto px-6 py-3.5 rounded-xl font-bold text-white text-sm md:text-base transition-transform active:scale-95 hover:shadow-lg flex-shrink-0 whitespace-nowrap"
+                        style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}
+                    >
+                        🔍 Check Availability
+                    </button>
+                </div>
+            </div>
+
             {/* Special offer banner (restored below hero section) */}
             <div className="mx-4 md:mx-12 lg:mx-20 mt-6 mb-6 p-5 md:p-8 rounded-2xl relative overflow-hidden shadow-xl" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
                 <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 border-2 border-white/10 rounded-full -mr-10 -mt-10" />
@@ -326,7 +357,7 @@ export const HomePage = ({ state }: HomePageProps) => {
                     <div className="flex items-center gap-3 md:gap-5">
                         <span className="text-[#F59820] font-bold text-lg md:text-xl">₹3,660 <span className="text-sm font-normal text-white/80">per night</span></span>
                         <button
-                            onClick={() => setPage('rooms')}
+                            onClick={() => openBookingModal()}
                             className="bg-white text-[#1A0A00] px-6 py-3 rounded-xl font-bold text-sm md:text-base transition-transform active:scale-95 hover:shadow-lg shadow-md whitespace-nowrap"
                         >
                             Book Now
@@ -370,7 +401,7 @@ export const HomePage = ({ state }: HomePageProps) => {
                             {getFilteredRooms().slice(0, 3).map(room => (
                                 <div
                                     key={room.id}
-                                    onClick={() => setPage('rooms')}
+                                    onClick={() => { setPage('rooms'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                                     className="min-w-[210px] md:min-w-0 bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transition-transform active:scale-95 hover:shadow-xl hover:-translate-y-1"
                                 >
                                     <div className="relative h-[135px] md:h-[200px] lg:h-[240px] overflow-hidden">
@@ -396,12 +427,6 @@ export const HomePage = ({ state }: HomePageProps) => {
                         </div>
                     </div>
 
-                    <BookingFormModal
-                        room={bookingRoom}
-                        isOpen={!!bookingRoom}
-                        onClose={() => setBookingRoom(null)}
-                    />
-
                     {/* Photo Gallery */}
                     <div className="px-4 md:px-12 lg:px-20 mb-6">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
@@ -426,22 +451,57 @@ export const HomePage = ({ state }: HomePageProps) => {
                             </div>
                         </div>
                         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-3">
-                            {GALLERY_IMAGES
-                                .filter(img => galleryFilter === 'All' || img.category === galleryFilter)
-                                .map((img, i) => (
-                                    <div
-                                        key={i}
-                                        className="animate-fadeUp"
-                                        style={{ animationDelay: `${i * 0.05}s`, animationFillMode: 'both' }}
-                                    >
-                                        <AnimatedImage
-                                            src={img.src}
-                                            alt={img.label}
-                                            className="aspect-square rounded-xl md:rounded-2xl cursor-pointer"
-                                            onClick={() => setSelectedImage(img)}
-                                        />
-                                    </div>
-                                ))}
+                            {galleryFilter === 'All' ? (
+                                // Category folders view
+                                Array.from(new Set(GALLERY_IMAGES.map(img => img.category).filter(Boolean))).map((cat, i) => {
+                                    const firstImage = GALLERY_IMAGES.find(img => img.category === cat);
+                                    const imageCount = GALLERY_IMAGES.filter(img => img.category === cat).length;
+
+                                    if (!firstImage) return null;
+
+                                    return (
+                                        <div
+                                            key={`cat-${i}`}
+                                            className="animate-fadeUp group relative cursor-pointer"
+                                            style={{ animationDelay: `${i * 0.05}s`, animationFillMode: 'both' }}
+                                            onClick={() => setGalleryFilter(cat!)}
+                                        >
+                                            <div className="aspect-square rounded-xl md:rounded-2xl overflow-hidden relative shadow-md">
+                                                <AnimatedImage
+                                                    src={firstImage.src}
+                                                    alt={cat!}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-3 md:p-4">
+                                                    <h4 className="text-white font-['Playfair_Display'] text-sm md:text-lg font-semibold shadow-black drop-shadow-md">{cat}</h4>
+                                                    <p className="text-white/80 text-[10px] md:text-xs">{imageCount} Items</p>
+                                                </div>
+                                                <div className="absolute top-2 right-2 bg-white/20 backdrop-blur-md rounded-full w-6 h-6 flex items-center justify-center border border-white/30">
+                                                    <span className="text-white text-xs">📁</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                // Filtering by a specific category
+                                GALLERY_IMAGES
+                                    .filter(img => img.category === galleryFilter)
+                                    .map((img, i) => (
+                                        <div
+                                            key={i}
+                                            className="animate-fadeUp"
+                                            style={{ animationDelay: `${i * 0.05}s`, animationFillMode: 'both' }}
+                                        >
+                                            <AnimatedImage
+                                                src={img.src}
+                                                alt={img.label}
+                                                className="aspect-square rounded-xl md:rounded-2xl cursor-pointer"
+                                                onClick={() => setSelectedImage(img)}
+                                            />
+                                        </div>
+                                    ))
+                            )}
                         </div>
                     </div>
 
@@ -496,32 +556,7 @@ export const HomePage = ({ state }: HomePageProps) => {
                         </div>
                     </div>
 
-                    {/* Booking card replaced the banner */}
-                    <div className="px-4 md:px-12 lg:px-20 mb-6 relative z-10 -mt-2">
-                        <div className="bg-white rounded-2xl shadow-lg p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 max-w-5xl mx-auto border border-[#FFE5C0]/50">
-                            <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:divide-x divide-[#FFE5C0]">
-                                <div className="md:px-4">
-                                    <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Check-in</label>
-                                    <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">20 Feb 2025</div>
-                                </div>
-                                <div className="md:px-4">
-                                    <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Check-out</label>
-                                    <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">21 Feb 2025</div>
-                                </div>
-                                <div className="col-span-2 md:col-span-1 border-t md:border-t-0 border-[#FFE5C0] pt-3 md:pt-0 md:px-4">
-                                    <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#7A5230] mb-0.5 block">Guests & Rooms</label>
-                                    <div className="text-sm md:text-base font-bold text-[#1A0A00] truncate">2 Adults · 1 Room</div>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => setPage('rooms')}
-                                className="w-full md:w-auto px-6 py-3.5 rounded-xl font-bold text-white text-sm md:text-base transition-transform active:scale-95 hover:shadow-lg flex-shrink-0 whitespace-nowrap"
-                                style={{ background: 'linear-gradient(135deg, #E8760A, #F59820)' }}
-                            >
-                                🔍 Check Availability
-                            </button>
-                        </div>
-                    </div>
+
 
                     {/* ✨ Our Facilities – highlighted */}
                     <div className="px-4 md:px-12 lg:px-20 mb-6">
@@ -694,40 +729,42 @@ export const HomePage = ({ state }: HomePageProps) => {
                             <div className="h-1 flex-1 rounded-full bg-[#FFE5C0]" />
                         </div>
                         <p className="text-xs md:text-sm text-[#7A5230] mb-4 ml-10">Explore Puri and beyond</p>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                        <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-2">
                             {NEARBY_ATTRACTIONS.map((a, i) => (
                                 <a
                                     key={i}
                                     href={a.mapLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="block group relative rounded-2xl overflow-hidden aspect-[4/5] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                                    className="block group relative rounded-lg overflow-hidden aspect-square shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 bg-white border border-[#FFE5C0]/50"
                                 >
-                                    {/* Background Image */}
-                                    <div
-                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                                        style={{ backgroundImage: `url(${a.image})` }}
-                                    />
+                                    {/* Background Image Container */}
+                                    <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+                                        <div
+                                            className="w-full h-full bg-cover bg-center bg-no-repeat"
+                                            style={{ backgroundImage: `url(${a.image})` }}
+                                        />
+                                    </div>
 
                                     {/* Gradient Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
 
                                     {/* Top Icon Badge */}
-                                    <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-sm shadow-lg">
+                                    <div className="absolute top-1.5 left-1.5 w-4 h-4 md:w-5 md:h-5 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center text-[8px] md:text-[10px] shadow-lg">
                                         {a.icon}
                                     </div>
 
                                     {/* Distance Badge */}
-                                    <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-md text-white text-[10px] md:text-xs px-2 py-1 rounded-full font-semibold border border-white/10">
+                                    <div className="absolute top-1.5 right-1.5 bg-black/40 backdrop-blur-md text-white text-[7px] md:text-[8px] px-1 py-0.5 rounded-full font-semibold border border-white/10">
                                         {a.distance}
                                     </div>
 
                                     {/* Content (Bottom aligned) */}
-                                    <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                        <h4 className="text-white font-bold text-sm md:text-base leading-tight mb-1">{a.name}</h4>
-                                        <div className="flex items-center gap-1 text-[#FFE5C0] text-[10px] md:text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="absolute bottom-0 left-0 right-0 p-1.5 md:p-2 transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
+                                        <h4 className="text-white font-bold text-[8px] md:text-[9px] leading-tight mb-0.5 truncate">{a.name}</h4>
+                                        <div className="flex items-center gap-0.5 text-[#FFE5C0] text-[6px] md:text-[7px] font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <span>Open Map</span>
-                                            <span className="text-[8px]">↗</span>
+                                            <span className="text-[5px]">↗</span>
                                         </div>
                                     </div>
                                 </a>

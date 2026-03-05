@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { BookingFormModal } from './BookingFormModal';
-import { hotelLogo, ROOMS } from '../data/constants';
-import { useAppState } from '../hooks/useAppState';
+import { hotelLogo } from '../data/constants';
 
-export const BookNowPopup = ({ state }: { state: ReturnType<typeof useAppState> }) => {
+interface BookNowPopupProps {
+    openBookingModal: () => void;
+}
+
+export const BookNowPopup = ({ openBookingModal }: BookNowPopupProps) => {
     const [showPopup, setShowPopup] = useState(false);
     const [dismissed, setDismissed] = useState(false);
-    const [showBooking, setShowBooking] = useState(false);
     const [animState, setAnimState] = useState<'hidden' | 'entering' | 'visible' | 'exiting'>('hidden');
 
     useEffect(() => {
@@ -38,7 +39,7 @@ export const BookNowPopup = ({ state }: { state: ReturnType<typeof useAppState> 
 
     const handleBookNow = () => {
         dismissPopup();
-        setTimeout(() => setShowBooking(true), 350);
+        setTimeout(() => openBookingModal(), 350);
     };
 
     return (
@@ -126,16 +127,6 @@ export const BookNowPopup = ({ state }: { state: ReturnType<typeof useAppState> 
                     </div>
                 </div>
             )}
-
-            {/* Booking Form Modal */}
-            <BookingFormModal
-                room={ROOMS[0]} // Default to first room for the general popup
-                isOpen={showBooking}
-                onClose={() => setShowBooking(false)}
-                checkIn={state.checkIn}
-                checkOut={state.checkOut}
-                guests={state.guests}
-            />
         </>
     );
 };

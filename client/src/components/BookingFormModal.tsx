@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Phone } from 'lucide-react';
-import { Room, ROOMS, CANCELLATION_POLICY } from '../data/constants';
+import { Room, CANCELLATION_POLICY } from '../data/constants';
 import { createBooking, getSettings, Settings } from '../data/adminStore';
 import { PaymentModal } from './PaymentModal';
 
@@ -23,9 +23,6 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
     const [submitted, setSubmitted] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
     const [roomsFull, setRoomsFull] = useState(false);
-    const [numAdults, setNumAdults] = useState(guests || 2);
-    const [numKids, setNumKids] = useState(0);
-
 
     // Load availability from backend settings
     useEffect(() => {
@@ -59,13 +56,7 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
         );
     }
 
-    const extraAdults = Math.max(0, numAdults - 2);
-    const extraCharge = extraAdults * 500;
-    const adjustedPrice = (currentRoom?.price || 0) + extraCharge;
-    const totalWithGst = Math.round(adjustedPrice * 1.05);
-
     const handleSubmit = async (e: React.FormEvent) => {
-
         e.preventDefault();
         try {
             await createBooking({
@@ -76,10 +67,8 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                 userPhone: formData.phone,
                 checkIn: checkIn,
                 checkOut: checkOut,
-                guests: numAdults + numKids,
-                notes: `Adults: ${numAdults}, Kids: ${numKids}`,
+                guests: guests,
             });
-
         } catch {
             // If backend unavailable, still show success UX
             console.warn('Could not save booking to server, continuing...');
@@ -125,28 +114,13 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Room Selection */}
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-[#7A5230] uppercase ml-1">Select Room Category</label>
-                                <select
-                                    className="w-full px-4 py-3 bg-white border border-[#FFE5C0] rounded-xl focus:outline-none focus:border-[#E8760A] transition-colors text-[#1A0A00] font-semibold appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%207.5L10%2012.5L15%207.5%22%20stroke%3D%22%237A5230%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:20px] bg-[right_1rem_center] bg-no-repeat"
-                                    value={currentRoom.id}
-                                    onChange={(e) => {
-                                        const selected = ROOMS.find(r => r.id === parseInt(e.target.value));
-                                        if (selected) setCurrentRoom(selected);
-                                    }}
-                                >
-                                    {ROOMS.map(r => (
-                                        <option key={r.id} value={r.id}>{r.name} — ₹{r.price}/night</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Room Preview */}
+                            {/* Room Preview with Price & GST */}
                             <div className="bg-[#FFF2E0] rounded-2xl p-4 border border-[#E8760A]/10">
                                 <div className="flex justify-between items-start mb-2">
-                                    <div className="text-sm font-bold text-[#1A0A00]">{currentRoom.type} Suite</div>
-                                    <div className="text-[#E8760A] font-bold text-sm">₹{currentRoom.price}/night</div>
+                                    <div>
+                                        <div className="text-sm font-bold text-[#1A0A00]">{currentRoom.name}</div>
+                                        <div className="text-[10px] text-[#7A5230]">{currentRoom.type}</div>
+                                    </div>
                                 </div>
                                 {checkIn && checkOut && (
                                     <div className="flex justify-between items-center bg-white/60 p-2 rounded-lg mb-2 border border-[#FFE5C0]/50">
@@ -154,88 +128,31 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                         <div className="text-[#E8760A] text-xs font-bold">→</div>
                                         <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Check-out</div><div className="text-[#1A0A00] font-semibold">{checkOut}</div></div>
                                         <div className="border-l border-[#FFE5C0] h-6 mx-1"></div>
-                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Total Guests</div><div className="text-[#1A0A00] font-semibold">{numAdults + numKids}</div></div>
+                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Guests</div><div className="text-[#1A0A00] font-semibold">{guests || 1}</div></div>
                                     </div>
                                 )}
-
-                                {/* Guest Selection */}
-                                <div className="grid grid-cols-2 gap-3 mb-3">
-                                    <div className="bg-white/60 p-2 rounded-xl border border-[#FFE5C0]/50">
-                                        <label className="text-[9px] font-bold text-[#7A5230] uppercase block mb-1 text-center">Adults (10+ Years)</label>
-                                        <div className="flex items-center justify-between px-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => setNumAdults(Math.max(1, numAdults - 1))}
-                                                className="w-6 h-6 rounded-full bg-white border border-[#FFE5C0] flex items-center justify-center text-[#E8760A] font-bold"
-                                            >-</button>
-                                            <span className="text-sm font-bold text-[#1A0A00]">{numAdults}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => setNumAdults(numAdults + 1)}
-                                                className="w-6 h-6 rounded-full bg-white border border-[#FFE5C0] flex items-center justify-center text-[#E8760A] font-bold"
-                                            >+</button>
-                                        </div>
-                                    </div>
-                                    <div className="bg-white/60 p-2 rounded-xl border border-[#FFE5C0]/50">
-                                        <label className="text-[9px] font-bold text-[#7A5230] uppercase block mb-1 text-center">Kids (Under 10)</label>
-                                        <div className="flex items-center justify-between px-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => setNumKids(Math.max(0, numKids - 1))}
-                                                className="w-6 h-6 rounded-full bg-white border border-[#FFE5C0] flex items-center justify-center text-[#E8760A] font-bold"
-                                            >-</button>
-                                            <span className="text-sm font-bold text-[#1A0A00]">{numKids}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => setNumKids(numKids + 1)}
-                                                className="w-6 h-6 rounded-full bg-white border border-[#FFE5C0] flex items-center justify-center text-[#E8760A] font-bold"
-                                            >+</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="text-[9px] text-[#7A5230] italic mb-3 px-1">
-                                    * Free for kids under 10. All prices are for 2 members only. Extra members charged at ₹500/night.
-                                </div>
-
                                 <div className="flex flex-wrap gap-2 mb-3">
                                     {currentRoom.features.slice(0, 3).map((f, i) => (
                                         <span key={i} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#FFE5C0] text-[#7A5230]">{f}</span>
                                     ))}
                                     {currentRoom.features.length > 3 && <span className="text-[10px] text-[#7A5230]/60">+{currentRoom.features.length - 3} more</span>}
                                 </div>
-                                {/* Booking Fee & GST Breakdown */}
+                                {/* GST Breakdown */}
                                 <div className="bg-white/70 rounded-xl p-3 border border-[#FFE5C0]/50 space-y-1.5">
                                     <div className="flex justify-between text-[11px]">
-                                        <span className="text-[#7A5230]">Room Tariff (Base for 2)</span>
+                                        <span className="text-[#7A5230]">Room Tariff</span>
                                         <span className="text-[#1A0A00] font-semibold">₹{currentRoom.price.toLocaleString()}</span>
                                     </div>
-                                    {extraCharge > 0 && (
-                                        <div className="flex justify-between text-[11px]">
-                                            <span className="text-[#7A5230] italic">Extra Member Charge ({extraAdults} × ₹500)</span>
-                                            <span className="text-[#1A0A00] font-semibold">₹{extraCharge.toLocaleString()}</span>
-                                        </div>
-                                    )}
                                     <div className="flex justify-between text-[11px]">
                                         <span className="text-[#7A5230]">GST (5%)</span>
-                                        <span className="text-[#1A0A00] font-semibold">₹{Math.round(adjustedPrice * 0.05).toLocaleString()}</span>
+                                        <span className="text-[#1A0A00] font-semibold">₹{Math.round(currentRoom.price * 0.05).toLocaleString()}</span>
                                     </div>
                                     <div className="border-t border-[#FFE5C0] pt-1.5 flex justify-between text-sm">
-                                        <span className="font-bold text-[#1A0A00]">Total</span>
-                                        <span className="font-bold text-[#1A0A00]">₹{totalWithGst.toLocaleString()}/night</span>
+                                        <span className="font-bold text-[#E8760A]">Total Payable</span>
+                                        <span className="font-bold text-[#E8760A]">₹{Math.round(currentRoom.price * 1.05).toLocaleString()}/night</span>
                                     </div>
-                                    <div className="border-t border-[#E8760A]/20 pt-2 mt-1">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="font-bold text-[#E8760A]">🔒 Booking Fee (Advance)</span>
-                                            <span className="font-bold text-[#E8760A] text-lg">₹{Math.round(totalWithGst * 0.3).toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between text-[11px] mt-0.5">
-                                            <span className="text-[#7A5230]">Remaining (pay at check-in)</span>
-                                            <span className="text-[#7A5230] font-semibold">₹{Math.round(totalWithGst * 0.7).toLocaleString()}</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-[8px] text-[#7A5230]/50">* 30% advance booking fee required. Remaining payable at check-in. Kids under 10 stay free. Base price is for 2 members. Each extra adult costs ₹500/night.</p>
+                                    <p className="text-[8px] text-[#7A5230]/50">* Inclusive of 5% GST as per Government norms</p>
                                 </div>
-
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-[#7A5230] uppercase ml-1">Full Name</label>
@@ -297,34 +214,53 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                 </div>
                             </div>
 
+                            {/* Payment Info Preview */}
+                            <div className="bg-[#EEFAEF] rounded-xl p-3 border border-green-200/60">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-xs">💳</span>
+                                    <span className="text-[10px] font-bold text-[#1A0A00] uppercase tracking-wider">Payment Options</span>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 bg-white/70 p-2 rounded-lg">
+                                        <div className="w-8 h-8 bg-[#5f259f] rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <span className="text-white text-sm font-bold">₱</span>
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] font-bold text-[#1A0A00]">UPI / QR Code</p>
+                                            <p className="text-[9px] text-[#7A5230]">PhonePe, Google Pay, Paytm, BHIM</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 bg-white/70 p-2 rounded-lg">
+                                        <div className="w-8 h-8 bg-[#004B87] rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <span className="text-white text-[10px] font-bold">HDFC</span>
+                                        </div>
+                                        <div>
+                                            <p className="text-[11px] font-bold text-[#1A0A00]">Bank Transfer</p>
+                                            <p className="text-[9px] text-[#7A5230]">A/C: 50200109160912 · IFSC: HDFC0001117</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="text-[8px] text-green-700/60 mt-1.5 text-center">QR Code & full details will appear after booking confirmation</p>
+                            </div>
+
                             <div className="pt-2 space-y-3">
-                                {/* Primary: Pay Booking Fee */}
-                                <button
-                                    type="submit"
-                                    className="w-full bg-gradient-to-r from-[#E8760A] to-[#F59820] text-white py-4 rounded-xl font-bold text-base hover:shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                                >
-                                    💳 Pay Booking Fee — ₹{Math.round(totalWithGst * 0.3).toLocaleString()}
-                                </button>
-
-                                {/* Direct Pay Full Amount */}
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPayment(true)}
-                                    className="w-full bg-[#1A0A00] text-white py-3.5 rounded-xl font-bold text-sm hover:bg-[#3D1C00] active:scale-[0.98] transition-all flex items-center justify-center gap-2 border border-[#3D1C00]"
-                                >
-                                    🏦 Pay Full Amount — ₹{totalWithGst.toLocaleString()}
-                                </button>
-
-
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    className="w-full py-2 text-xs font-semibold text-[#7A5230]/60 hover:text-[#7A5230] transition-colors"
-                                >
-                                    Cancel
-                                </button>
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={onClose}
+                                        className="flex-1 px-4 py-4 rounded-xl font-bold text-base border border-[#FFE5C0] text-[#7A5230] hover:bg-[#FFF2E0] transition-all active:scale-[0.98]"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="flex-[2] bg-gradient-to-r from-[#E8760A] to-[#F59820] text-white py-4 rounded-xl font-bold text-base hover:shadow-lg active:scale-[0.98] transition-all"
+                                    >
+                                        Confirm Booking
+                                    </button>
+                                </div>
                                 <p className="text-[10px] text-center text-[#7A5230]/60 italic">
-                                    By proceeding, you agree to our booking policies.
+                                    By clicking confirm, you agree to our booking policies.
                                 </p>
                             </div>
                         </form>
@@ -336,9 +272,8 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                 isOpen={showPayment}
                 onClose={handlePaymentClose}
                 roomName={currentRoom.name}
-                roomPrice={adjustedPrice}
+                roomPrice={currentRoom.price}
             />
-
         </div >
     );
 };

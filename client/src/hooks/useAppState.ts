@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ROOMS, Room } from '../data/constants';
-import { getRooms, AdminRoom } from '../data/adminStore';
+import { getRooms, AdminRoom, getSettings, FestivalRule } from '../data/adminStore';
 
 export type PageId = 'home' | 'rooms' | 'detail' | 'contact' | 'admin' | 'about';
 
@@ -30,6 +30,9 @@ export function useAppState() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [activeRoomImg, setActiveRoomImg] = useState<Record<number, number>>({});
     const [allRooms, setAllRooms] = useState<AdminRoom[]>([]);
+    const [festivalRules, setFestivalRules] = useState<FestivalRule[]>([]);
+    const [bookingModalOpen, setBookingModalOpen] = useState(false);
+    const [bookingRoom, setBookingRoom] = useState<Room | null>(null);
 
     // Check URL hash for admin access
     useEffect(() => {
@@ -50,7 +53,26 @@ export function useAppState() {
     // Load rooms from backend, fall back to static data
     useEffect(() => {
         refreshRooms();
+        // Load festival pricing rules from settings
+        getSettings().then(s => {
+            if (s.festival_pricing) setFestivalRules(s.festival_pricing);
+        }).catch(() => { });
     }, []);
+
+    // Helper: compute festival multiplier for a given check-in date
+    const getFestivalMultiplier = (checkInDate: string): { multiplier: number; festivalName: string | null } => {
+        let best = 1;
+        let name: string | null = null;
+        for (const rule of festivalRules) {
+            if (rule.active && checkInDate >= rule.startDate && checkInDate <= rule.endDate) {
+                if (rule.multiplier > best) {
+                    best = rule.multiplier;
+                    name = rule.name;
+                }
+            }
+        }
+        return { multiplier: best, festivalName: name };
+    };
 
     const toggleWishlist = (id: number) => {
         setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -122,6 +144,16 @@ export function useAppState() {
         }
     };
 
+    const openBookingModal = useCallback((room?: Room) => {
+        if (room) setBookingRoom(room);
+        setBookingModalOpen(true);
+    }, []);
+
+    const closeBookingModal = useCallback(() => {
+        setBookingModalOpen(false);
+        setBookingRoom(null);
+    }, []);
+
     return {
         page, setPage: navigateTo,
         selectedRoom, setSelectedRoom,
@@ -135,6 +167,9 @@ export function useAppState() {
         menuOpen, setMenuOpen,
         getRoomImgIndex, setRoomImgIndex,
         getFilteredRooms,
-        refreshRooms
+        refreshRooms,
+        festivalRules,
+        getFestivalMultiplier,
+        bookingModalOpen, bookingRoom, openBookingModal, closeBookingModal,
     };
 }

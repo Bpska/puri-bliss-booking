@@ -4,6 +4,7 @@ import { SideMenu } from './components/SideMenu';
 import { Footer } from './components/Footer';
 import { OffersBanner } from './components/OffersBanner';
 import { BookNowPopup } from './components/BookNowPopup';
+import { BookingFormModal } from './components/BookingFormModal';
 import { HomePage } from './pages/HomePage';
 import { RoomsPage } from './pages/RoomsPage';
 import { DetailPage } from './pages/DetailPage';
@@ -105,7 +106,6 @@ function App() {
       {state.page === 'about' && <AboutPage state={state} />}
 
       <Footer setPage={state.setPage} />
-
       <BottomNav page={state.page} setPage={state.setPage} />
 
       {state.menuOpen && (
@@ -126,12 +126,21 @@ function App() {
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
         </svg>
-        {/* Pulse ring */}
         <span className="absolute inset-0 rounded-full border-2 border-[#25D366] animate-ping opacity-30" />
       </a>
 
-      {/* Book Now popup + Payment modal */}
-      <BookNowPopup state={state} />
+      {/* Book Now popup */}
+      <BookNowPopup openBookingModal={state.openBookingModal} />
+
+      {/* Booking Form Modal */}
+      <BookingFormModal
+        isOpen={state.bookingModalOpen}
+        onClose={state.closeBookingModal}
+        room={state.bookingRoom}
+        checkIn={state.checkIn}
+        checkOut={state.checkOut}
+        guests={state.guests}
+      />
     </div>
   );
 }

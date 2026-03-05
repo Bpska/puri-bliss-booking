@@ -8,8 +8,7 @@ interface RoomsPageProps {
 }
 
 export const RoomsPage = ({ state }: RoomsPageProps) => {
-    const { setPage, wishlist, toggleWishlist, filter, setFilter, getFilteredRooms, getRoomImgIndex, setRoomImgIndex, guests, setGuests } = state;
-
+    const { setPage, wishlist, toggleWishlist, filter, setFilter, getFilteredRooms, getRoomImgIndex, setRoomImgIndex } = state;
     const filtered = getFilteredRooms();
 
     return (
@@ -81,18 +80,6 @@ export const RoomsPage = ({ state }: RoomsPageProps) => {
                 </div>
             </div>
 
-            {/* Pricing Policy Note */}
-            <div className="px-4 md:px-12 lg:px-20 mb-6">
-                <div className="bg-[#FFF2E0] border border-[#E8760A]/20 rounded-2xl p-4 flex items-center gap-3">
-                    <span className="text-2xl">✨</span>
-                    <div>
-                        <div className="text-sm font-bold text-[#1A0A00]">Pricing Policy</div>
-                        <p className="text-xs text-[#7A5230]">All prices are for 2 members only. Extra members charged at ₹500/night. <b>Kids under 10 stay free!</b></p>
-                    </div>
-                </div>
-            </div>
-
-
             <div className="px-4 md:px-12 lg:px-20 space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6">
                 {filtered.map(room => {
                     const imgIdx = getRoomImgIndex(room.id);
@@ -158,17 +145,6 @@ export const RoomsPage = ({ state }: RoomsPageProps) => {
                                     {room.features.slice(0, 4).map((f, i) => (
                                         <span key={i} className="bg-[#FFF2E0] text-[#7A5230] text-[10px] md:text-xs px-2.5 py-1 rounded-full font-medium">{f}</span>
                                     ))}
-                                </div>
-                                <div className="bg-white rounded-xl border border-[#FFE5C0] p-4 mb-4">
-                                    <label className="text-xs md:text-sm text-[#7A5230] mb-2 block">Guests</label>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm md:text-base font-semibold text-[#1A0A00]">{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
-                                        <div className="flex items-center gap-3">
-                                            <button onClick={() => setGuests(Math.max(1, guests - 1))} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-[#E8760A] text-[#E8760A] flex items-center justify-center font-bold transition-transform active:scale-90 hover:bg-[#FFF2E0]">−</button>
-                                            <button onClick={() => setGuests(Math.min(8, guests + 1))} className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#E8760A] text-white flex items-center justify-center font-bold transition-transform active:scale-90 hover:bg-[#D4660A]">+</button>
-                                        </div>
-                                    </div>
-                                    <p className="text-[10px] text-[#7A5230] mt-2 italic">* Base price for 2 members. Extra members: ₹500/night. Kids under 10 stay free!</p>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div>
