@@ -215,7 +215,7 @@ Paste this configuration (replace `yourdomain.com` with your actual domain):
 ```nginx
 server {
     listen 80;
-    server_name yourdomain.com www.yourdomain.com;
+    server_name hotelamrutabhojana.com www.hotelamrutabhojana.com;
 
     location / {
         proxy_pass http://localhost:8080;
@@ -262,7 +262,7 @@ Now visit `http://yourdomain.com` — your site will load! ✅
 sudo apt install certbot python3-certbot-nginx -y
 
 # 2. Get a free SSL certificate (replace with your actual domain)
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+sudo certbot --nginx -d hotelamrutabhojana.com -d www.hotelamrutabhojana.com
 
 # 3. Follow the prompts — enter your email, agree to terms
 # Certbot will automatically update your Nginx config for HTTPS

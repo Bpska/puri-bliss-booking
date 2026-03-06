@@ -36,7 +36,7 @@ services:
       - ADMIN_USERNAME=bps
       - ADMIN_PASSWORD=bps
       # Cross origin requests
-      - FRONTEND_URL=http://localhost:8080
+      - FRONTEND_URL=http://localhost:8010
 
   frontend:
     build:
@@ -47,7 +47,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "8080:80" # Maps the host port 8080 to the container's Nginx port 80
+      - "8010:80" # Maps the host port 8010 to the container's Nginx port 80
 
 volumes:
   postgres_data:
