@@ -100,7 +100,7 @@ export const BookNowPopup = ({ openBookingModal }: BookNowPopupProps) => {
                             <div className="bg-[#FFF2E0] rounded-xl p-3 mb-4 flex items-center gap-3">
                                 <span className="text-2xl">🏷️</span>
                                 <div>
-                                    <div className="text-sm font-bold text-[#1A0A00]">Rooms from ₹1,200/night</div>
+                                    <div className="text-sm font-bold text-[#1A0A00]">Rooms from ₹1,800/night</div>
                                     <div className="text-[10px] text-[#7A5230]">Deluxe, Standard & Economy available</div>
                                 </div>
                             </div>
