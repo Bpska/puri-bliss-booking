@@ -14,6 +14,15 @@ interface BookingFormModalProps {
 }
 
 export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, guests }: BookingFormModalProps) => {
+    const formatDisplayDate = (dateStr?: string) => {
+        if (!dateStr) return '';
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return dateStr;
+    };
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -124,9 +133,9 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                 </div>
                                 {checkIn && checkOut && (
                                     <div className="flex justify-between items-center bg-white/60 p-2 rounded-lg mb-2 border border-[#FFE5C0]/50">
-                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Check-in</div><div className="text-[#1A0A00] font-semibold">{checkIn}</div></div>
+                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Check-in</div><div className="text-[#1A0A00] font-semibold">{formatDisplayDate(checkIn)}</div></div>
                                         <div className="text-[#E8760A] text-xs font-bold">→</div>
-                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Check-out</div><div className="text-[#1A0A00] font-semibold">{checkOut}</div></div>
+                                        <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Check-out</div><div className="text-[#1A0A00] font-semibold">{formatDisplayDate(checkOut)}</div></div>
                                         <div className="border-l border-[#FFE5C0] h-6 mx-1"></div>
                                         <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Guests</div><div className="text-[#1A0A00] font-semibold">{guests || 1}</div></div>
                                     </div>

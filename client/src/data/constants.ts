@@ -1,6 +1,7 @@
 // Hotel logo
 export { default as hotelLogo } from '../images/hotel-logo-2.jpg';
 export { default as hotelLogoBW } from '../images/hotel-logo-1.jpg';
+export { default as fssaiLogo } from '../images/fssai-logo-fssai-icon-free-free-vector.webp';
 
 // Hotel highlight / feature images
 export { default as highlightRooftop } from '../images/hotel-highlight-rooftop-garden.jpg';
@@ -61,6 +62,9 @@ import attrChandrabhaga from '../images/attractions/attraction_chandrabhaga_beac
 import attrChilka from '../images/attractions/attraction_chilka_lake_1772490678598.png';
 import attrLingraj from '../images/attractions/attraction_lingraj_temple_1772490703675.png';
 import attrBiraja from '../images/attractions/attraction_lingraj_temple_1772490703675.png'; // Using Lingraj as fallback since generation limit was hit
+
+import swiggyLogo from '../images/433-4338596_swiggy-logo-png-image-free-download-searchpng-swiggy.webp';
+import zomatoLogo from '../images/zomato-logo.png';
 
 export interface Room {
     id: number;
@@ -158,8 +162,6 @@ export const AMENITIES: Amenity[] = [
 ];
 
 export const GALLERY_IMAGES = [
-    { src: highlightEx1Img, label: 'Main Entrance', category: 'Exterior & Entrance' },
-    { src: highlightEx2Img, label: 'Hotel Building', category: 'Exterior & Entrance' },
     { src: hero6, label: 'Hotel Signboard', category: 'Exterior & Entrance' },
     { src: hero5, label: 'Night Exterior', category: 'Exterior & Entrance' },
     { src: deluxeAc1, label: 'Deluxe Room View', category: 'Rooms' },
@@ -173,7 +175,6 @@ export const GALLERY_IMAGES = [
     { src: highlightEx1Img, label: 'Rooftop View 1', category: 'Rooftop' },
     { src: highlightEx2Img, label: 'Rooftop View 2', category: 'Rooftop' },
     { src: highlightLobbyImg, label: 'Rooftop Lounge', category: 'Rooftop' },
-    { src: highlightRooftopImg, label: 'Garden Dining', category: 'Restaurant' },
     { src: hero1, label: 'Restaurant Interior 1', category: 'Restaurant' },
     { src: hero2, label: 'Restaurant Interior 2', category: 'Restaurant' },
     { src: hero3, label: 'Dining Area 1', category: 'Restaurant' },
@@ -234,11 +235,11 @@ export const DINING = {
         { meal: 'Breakfast', time: '6:30 AM – 11:00 AM', icon: '🌅' },
         { meal: 'Lunch', time: '11:00 AM – 4:00 PM', icon: '☀️' },
         { meal: 'Dinner', time: '7:00 PM – 11:30 PM', icon: '🌙' },
-        { meal: 'Midnight', time: '12:00 AM – 3:00 AM', icon: '🌌' },
+        { meal: 'Midnight', time: '', icon: '🌌' },
     ],
     delivery: [
-        { name: 'Zomato', url: 'https://www.zomato.com/puri/hotel-amruta-bhojana-dolamandap-sahi/order', color: '#E23744' },
-        { name: 'Swiggy', url: 'https://www.swiggy.com/city/puri/hotel-amruta-bhojana-balagandi-rest1190898', color: '#FC8019' },
+        { name: 'Zomato', url: 'https://www.zomato.com/puri/hotel-amruta-bhojana-dolamandap-sahi/order', color: '#E23744', logo: zomatoLogo },
+        { name: 'Swiggy', url: 'https://www.swiggy.com/city/puri/hotel-amruta-bhojana-balagandi-rest1190898', color: '#FC8019', logo: swiggyLogo },
     ],
 };
 

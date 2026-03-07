@@ -20,8 +20,17 @@ export function useAppState() {
         return `${year}-${month}-${day}`;
     };
 
-    const [checkIn, setCheckIn] = useState(formatDate(tomorrow));
-    const [checkOut, setCheckOut] = useState(formatDate(dayAfter));
+    const formatDisplayDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return dateStr;
+    };
+
+    const [checkIn, setCheckIn] = useState(formatDate(today));
+    const [checkOut, setCheckOut] = useState(formatDate(tomorrow));
     const [guests, setGuests] = useState(2);
     const [wishlist, setWishlist] = useState<number[]>([]);
     const [filter, setFilter] = useState('All Rooms');
@@ -34,12 +43,23 @@ export function useAppState() {
     const [bookingModalOpen, setBookingModalOpen] = useState(false);
     const [bookingRoom, setBookingRoom] = useState<Room | null>(null);
 
-    // Check URL hash for admin access
+    // Check URL hash for routing and browser back button support
     useEffect(() => {
         const checkHash = () => {
-            if (window.location.hash === '#admin') {
-                setPage('admin');
+            const hash = window.location.hash.replace('#', '') as PageId;
+            const validPages: PageId[] = ['home', 'rooms', 'detail', 'contact', 'admin', 'about'];
+            if (validPages.includes(hash)) {
+                setPage(hash);
+            } else if (!hash) {
+                setPage('home');
             }
+
+            // Scroll to top on browser back/forward navigation
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                const scrollEl = document.querySelector('.overflow-y-auto');
+                if (scrollEl) scrollEl.scrollTop = 0;
+            }, 10);
         };
         checkHash();
         window.addEventListener('hashchange', checkHash);
@@ -129,19 +149,29 @@ export function useAppState() {
 
     const navigateTo = (p: PageId, room?: Room) => {
         if (room) setSelectedRoom(room);
-        setPage(p);
+
+        // Update hash for browser history, which will trigger hashchange and setPage
+        if (p === 'home') {
+            if (window.location.hash !== '') {
+                window.history.pushState(null, '', window.location.pathname + window.location.search);
+                setPage(p); // manually set Page since hashchange might not fire perfectly for empty hash removal
+            } else {
+                setPage(p);
+            }
+        } else {
+            if (window.location.hash !== `#${p}`) {
+                window.location.hash = p;
+            } else {
+                setPage(p);
+            }
+        }
+
         setMenuOpen(false);
         // Scroll to top on every page navigation
         window.scrollTo({ top: 0, behavior: 'instant' });
         // Also reset any scrollable container in the app
         const scrollEl = document.querySelector('.overflow-y-auto');
         if (scrollEl) scrollEl.scrollTop = 0;
-        // Update hash for admin
-        if (p === 'admin') {
-            window.location.hash = '#admin';
-        } else if (window.location.hash === '#admin') {
-            window.location.hash = '';
-        }
     };
 
     const openBookingModal = useCallback((room?: Room) => {
@@ -171,5 +201,6 @@ export function useAppState() {
         festivalRules,
         getFestivalMultiplier,
         bookingModalOpen, bookingRoom, openBookingModal, closeBookingModal,
+        formatDisplayDate,
     };
 }
