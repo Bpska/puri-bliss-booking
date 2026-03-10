@@ -19,8 +19,8 @@ app.use(cors({
     origin: [FRONTEND_URL, 'http://localhost:5173', 'http://localhost:8080'],
     credentials: true,
 }));
-app.use(express.json({ limit: '20mb' })); // Allow large base64 images
-
+app.use(express.json({ limit: '50mb' })); // Allow large base64 images
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // ─── Routes ───────────────────────────────────────────────
 app.use('/api/auth', authRouter);
 app.use('/api/rooms', roomsRouter);

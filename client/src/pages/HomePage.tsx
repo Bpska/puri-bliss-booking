@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Phone, X, AlertTriangle, CalendarDays, ChevronDown } from 'lucide-react';
+import { Phone, X, AlertTriangle, CalendarDays, ChevronDown, Users } from 'lucide-react';
 import { AnimatedImage } from '../components/AnimatedImage';
 import { AMENITIES, GALLERY_IMAGES, HOTEL_INFO, hotelLogo, highlightRooftop, HERO_IMAGES, POLICIES, DINING, BOOKING_PLATFORMS, NEARBY_ATTRACTIONS, HOW_TO_REACH, CANCELLATION_POLICY } from '../data/constants';
 import heroNightExterior from '../images/hero-night-exterior.jpg';
@@ -13,7 +13,8 @@ interface HomePageProps {
 }
 
 export const HomePage = ({ state }: HomePageProps) => {
-    const { setPage, filter, getFilteredRooms, setMenuOpen, checkIn, checkOut, guests, formatDisplayDate, setCheckIn, setCheckOut } = state;
+    const { setPage, filter, getFilteredRooms, setMenuOpen, checkIn, checkOut, guests, setGuests, formatDisplayDate, setCheckIn, setCheckOut } = state;
+    const [isGuestsOpen, setIsGuestsOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<{ src: string, label: string } | null>(null);
     const [heroIdx, setHeroIdx] = useState(0);
     const [galleryFilter, setGalleryFilter] = useState('All');
@@ -321,7 +322,7 @@ export const HomePage = ({ state }: HomePageProps) => {
             </div>
 
             {/* Booking Banner (Merged) */}
-            <div className="mx-4 md:mx-12 lg:mx-20 relative z-20 -mt-8 mb-6 p-5 md:p-8 rounded-2xl overflow-hidden shadow-xl" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
+            <div className="mx-4 md:mx-12 lg:mx-20 relative z-20 mt-4 md:mt-6 mb-6 p-5 md:p-8 rounded-2xl overflow-hidden shadow-xl" style={{ background: 'linear-gradient(135deg, #1A0A00, #3D1C00)' }}>
                 <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 border-2 border-white/10 rounded-full -mr-10 -mt-10 pointer-events-none" />
                 <div className="relative flex flex-col xl:flex-row xl:items-center justify-between gap-6">
                     <div className="flex-shrink-0 text-center xl:text-left">
@@ -331,65 +332,89 @@ export const HomePage = ({ state }: HomePageProps) => {
 
                     <div className="flex-1 bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 border border-white/20 w-full max-w-4xl mx-auto xl:mx-0 shadow-inner">
                         <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:divide-x divide-white/20 text-white">
-                            <div className="md:px-4">
-                                <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block">Check-in</label>
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={checkIn}
-                                        min={new Date().toISOString().split('T')[0]}
-                                        onChange={(e) => {
-                                            const newCheckIn = e.target.value;
-                                            if (newCheckIn) {
-                                                setCheckIn(newCheckIn);
-                                                // If new checkIn is after current checkOut, push checkOut to next day
-                                                if (newCheckIn >= checkOut) {
-                                                    const nextDay = new Date(newCheckIn);
-                                                    nextDay.setDate(nextDay.getDate() + 1);
-                                                    setCheckOut(nextDay.toISOString().split('T')[0]);
-                                                }
+                            {/* Check-in */}
+                            <div className="md:px-4 relative group">
+                                <input
+                                    type="date"
+                                    value={checkIn}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    onChange={(e) => {
+                                        const newCheckIn = e.target.value;
+                                        if (newCheckIn) {
+                                            setCheckIn(newCheckIn);
+                                            if (newCheckIn >= checkOut) {
+                                                const nextDay = new Date(newCheckIn);
+                                                nextDay.setDate(nextDay.getDate() + 1);
+                                                setCheckOut(nextDay.toISOString().split('T')[0]);
                                             }
-                                        }}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                        style={{ WebkitAppearance: 'none', color: 'transparent', background: 'transparent' }} // Hide native text/bg
-                                    />
-                                    <div className="flex items-center gap-1.5 pointer-events-none group-hover:text-[#F59820] transition-colors">
-                                        <CalendarDays size={14} className="text-[#F59820] opacity-80" />
-                                        <span className="text-sm md:text-base font-bold text-white truncate block">
-                                            {formatDisplayDate(checkIn)}
-                                        </span>
-                                        <ChevronDown size={14} className="text-white/50" />
-                                    </div>
+                                        }
+                                    }}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    style={{ color: 'transparent', background: 'transparent' }}
+                                />
+                                <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block pointer-events-none">Check-in</label>
+                                <div className="flex items-center gap-1.5 pointer-events-none group-hover:text-[#F59820] transition-colors relative z-0 w-full">
+                                    <CalendarDays size={14} className="text-[#F59820] opacity-80 flex-shrink-0" />
+                                    <span className="text-sm md:text-base font-bold text-white truncate flex-1 block">
+                                        {formatDisplayDate(checkIn)}
+                                    </span>
+                                    <ChevronDown size={14} className="text-white/50 flex-shrink-0" />
                                 </div>
                             </div>
-                            <div className="md:px-4">
-                                <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block">Check-out</label>
-                                <div className="relative">
-                                    <input
-                                        type="date"
-                                        value={checkOut}
-                                        min={checkIn}
-                                        onChange={(e) => {
-                                            const newCheckOut = e.target.value;
-                                            if (newCheckOut && newCheckOut > checkIn) {
-                                                setCheckOut(newCheckOut);
-                                            }
-                                        }}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                        style={{ WebkitAppearance: 'none', color: 'transparent', background: 'transparent' }}
-                                    />
-                                    <div className="flex items-center gap-1.5 pointer-events-none group-hover:text-[#F59820] transition-colors">
-                                        <CalendarDays size={14} className="text-[#F59820] opacity-80" />
-                                        <span className="text-sm md:text-base font-bold text-white truncate block">
-                                            {formatDisplayDate(checkOut)}
-                                        </span>
-                                        <ChevronDown size={14} className="text-white/50" />
-                                    </div>
+                            {/* Check-out */}
+                            <div className="md:px-4 relative group">
+                                <input
+                                    type="date"
+                                    value={checkOut}
+                                    min={checkIn}
+                                    onChange={(e) => {
+                                        const newCheckOut = e.target.value;
+                                        if (newCheckOut && newCheckOut > checkIn) {
+                                            setCheckOut(newCheckOut);
+                                        }
+                                    }}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    style={{ color: 'transparent', background: 'transparent' }}
+                                />
+                                <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block pointer-events-none">Check-out</label>
+                                <div className="flex items-center gap-1.5 pointer-events-none group-hover:text-[#F59820] transition-colors relative z-0 w-full">
+                                    <CalendarDays size={14} className="text-[#F59820] opacity-80 flex-shrink-0" />
+                                    <span className="text-sm md:text-base font-bold text-white truncate flex-1 block">
+                                        {formatDisplayDate(checkOut)}
+                                    </span>
+                                    <ChevronDown size={14} className="text-white/50 flex-shrink-0" />
                                 </div>
                             </div>
-                            <div className="col-span-2 md:col-span-1 border-t md:border-t-0 border-white/20 pt-3 md:pt-0 md:px-4">
-                                <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block">Guests & Rooms</label>
-                                <div className="text-sm md:text-base font-bold text-white truncate">{guests} {guests === 1 ? 'Adult' : 'Adults'} · 1 Room</div>
+                            {/* Guests & Rooms */}
+                            <div className="col-span-2 md:col-span-1 border-t md:border-t-0 border-white/20 pt-3 md:pt-0 md:px-4 relative group cursor-pointer" onClick={() => setIsGuestsOpen(!isGuestsOpen)}>
+                                <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block pointer-events-none">Guests & Rooms</label>
+                                <div className="flex items-center gap-1.5 pointer-events-none group-hover:text-[#F59820] transition-colors relative z-0 w-full">
+                                    <Users size={14} className="text-[#F59820] opacity-80 flex-shrink-0" />
+                                    <div className="text-sm md:text-base font-bold text-white truncate flex-1 block">
+                                        {guests} {guests === 1 ? 'Adult' : 'Adults'} · 1 Room
+                                    </div>
+                                    <ChevronDown size={14} className="text-white/50 flex-shrink-0" />
+                                </div>
+                                {isGuestsOpen && (
+                                    <>
+                                        <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); setIsGuestsOpen(false); }} />
+                                        <div className="absolute top-full left-4 right-4 md:left-4 md:right-4 mt-2 bg-white rounded-xl shadow-2xl z-50 overflow-hidden border border-gray-100 animate-fadeIn origin-top">
+                                            {[1, 2, 3, 4, 5, 6].map(num => (
+                                                <div
+                                                    key={num}
+                                                    className={`px-4 py-3 text-sm md:text-base font-bold cursor-pointer transition-colors border-b last:border-0 border-gray-100 ${guests === num ? 'bg-[#FFF2E0] text-[#E8760A]' : 'text-[#3D1C00] hover:bg-gray-50'}`}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setGuests(num);
+                                                        setIsGuestsOpen(false);
+                                                    }}
+                                                >
+                                                    {num} {num === 1 ? 'Adult' : 'Adults'} · 1 Room
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                         <button
@@ -809,9 +834,19 @@ export const HomePage = ({ state }: HomePageProps) => {
 
                     {/* 🚗 How to Reach */}
                     <div className="px-4 md:px-12 lg:px-20 mb-6">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
-                            <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">How to Reach</h3>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                            <div className="flex items-center gap-2">
+                                <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
+                                <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">How to Reach</h3>
+                            </div>
+                            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                                <a href="tel:+919437388224" className="bg-white border border-[#E8760A] text-[#1A0A00] px-3 py-2 md:px-4 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 hover:bg-[#FFF2E0] transition-all shadow-sm whitespace-nowrap flex-shrink-0 transform active:scale-95">
+                                    <Phone size={14} className="text-[#E8760A]" /> Book An E-Rickshaw
+                                </a>
+                                <a href="tel:+919437388224" className="bg-[#E8760A] text-white px-3 py-2 md:px-4 md:py-2.5 rounded-lg md:rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 hover:shadow-lg hover:-translate-y-0.5 transition-all shadow-md whitespace-nowrap flex-shrink-0 transform active:scale-95">
+                                    <Phone size={14} /> Book A Car
+                                </a>
+                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3">
                             {HOW_TO_REACH.map((h, i) => (

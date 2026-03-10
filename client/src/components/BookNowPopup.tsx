@@ -3,10 +3,10 @@ import { X } from 'lucide-react';
 import { hotelLogo } from '../data/constants';
 
 interface BookNowPopupProps {
-    openBookingModal: () => void;
+    goToRooms: () => void;
 }
 
-export const BookNowPopup = ({ openBookingModal }: BookNowPopupProps) => {
+export const BookNowPopup = ({ goToRooms }: BookNowPopupProps) => {
     const [showPopup, setShowPopup] = useState(false);
     const [dismissed, setDismissed] = useState(false);
     const [animState, setAnimState] = useState<'hidden' | 'entering' | 'visible' | 'exiting'>('hidden');
@@ -39,7 +39,7 @@ export const BookNowPopup = ({ openBookingModal }: BookNowPopupProps) => {
 
     const handleBookNow = () => {
         dismissPopup();
-        setTimeout(() => openBookingModal(), 350);
+        setTimeout(() => goToRooms(), 350);
     };
 
     return (

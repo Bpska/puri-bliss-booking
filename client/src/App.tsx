@@ -130,7 +130,7 @@ function App() {
       </a>
 
       {/* Book Now popup */}
-      <BookNowPopup openBookingModal={state.openBookingModal} />
+      <BookNowPopup goToRooms={() => state.setPage('rooms')} />
 
       {/* Booking Form Modal */}
       <BookingFormModal
