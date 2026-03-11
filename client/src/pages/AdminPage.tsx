@@ -117,7 +117,7 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
     const [statusFilter, setStatusFilter] = useState<'all' | BookingStatus>('all');
 
     // ─── Settings state ──────────────────────────────────
-    const [settings, setSettings] = useState<Settings>({ rooms_full: false, total_rooms: 12, full_rooms: 0 });
+    const [settings, setSettings] = useState<Settings>({ rooms_full: false, total_rooms: 6, full_rooms: 0 });
 
     // ─── Festival Pricing state ───────────────────────────
     const [festivalRules, setFestivalRules] = useState<FestivalRule[]>([]);
@@ -1036,8 +1036,8 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
                                             const isPast = rule.endDate < now;
                                             return (
                                                 <div key={rule.id} className={`bg-[#1A1A1A] rounded-2xl border p-5 transition-all ${isLive ? 'border-green-500/40 shadow-lg shadow-green-500/5' :
-                                                        isPast ? 'border-[#2A2A2A] opacity-50' :
-                                                            rule.active ? 'border-[#E8760A]/30' : 'border-[#2A2A2A] opacity-60'
+                                                    isPast ? 'border-[#2A2A2A] opacity-50' :
+                                                        rule.active ? 'border-[#E8760A]/30' : 'border-[#2A2A2A] opacity-60'
                                                     }`}>
                                                     <div className="flex items-start justify-between gap-4">
                                                         <div className="flex-1">
@@ -1137,18 +1137,41 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
                                         <Calculator size={20} className="text-[#F59820]" />
                                         Room Occupancy Tracking
                                     </h3>
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-xs font-bold text-[#7A5230] uppercase tracking-wider mb-2">Total Rooms Present</label>
-                                            <input type="number" value={settings.total_rooms}
-                                                onChange={e => handleUpdateSettings({ total_rooms: parseInt(e.target.value) || 0 })}
-                                                className="w-full bg-[#0D0D0D] border border-[#3D1C00] rounded-xl px-4 py-3 text-white text-xl font-bold focus:outline-none focus:border-[#E8760A] transition-colors" />
+                                    <div className="flex flex-col md:flex-row gap-6 mb-6">
+                                        {/* Total Rooms (Readonly or controllable) */}
+                                        <div className="flex-1 bg-[#0D0D0D] border border-[#3D1C00] rounded-xl p-4 flex flex-col items-center justify-center">
+                                            <span className="text-[10px] font-bold text-[#7A5230] uppercase tracking-wider mb-1">Total Rooms</span>
+                                            <span className="text-3xl font-bold text-white mb-2">{settings.total_rooms}</span>
+                                            <div className="flex gap-2 w-full mt-2">
+                                                <button onClick={() => handleUpdateSettings({ total_rooms: Math.max(1, settings.total_rooms - 1) })} className="flex-1 px-3 py-1.5 bg-[#1A1A1A] border border-[#2A2A2A] text-[#7A5230] hover:text-white rounded-lg hover:bg-[#2A2A2A] transition-colors font-bold flex items-center justify-center"><span className="text-lg leading-none mb-0.5">-</span></button>
+                                                <button onClick={() => handleUpdateSettings({ total_rooms: settings.total_rooms + 1 })} className="flex-1 px-3 py-1.5 bg-[#1A1A1A] border border-[#2A2A2A] text-[#7A5230] hover:text-white rounded-lg hover:bg-[#2A2A2A] transition-colors font-bold flex items-center justify-center"><span className="text-lg leading-none mb-0.5">+</span></button>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-[#7A5230] uppercase tracking-wider mb-2">How many are FULL?</label>
-                                            <input type="number" value={settings.full_rooms}
-                                                onChange={e => handleUpdateSettings({ full_rooms: parseInt(e.target.value) || 0 })}
-                                                className="w-full bg-[#0D0D0D] border border-[#3D1C00] rounded-xl px-4 py-3 text-white text-xl font-bold focus:outline-none focus:border-[#E8760A] transition-colors" />
+
+                                        {/* Occupancy Controls */}
+                                        <div className="flex-[2.5] flex gap-3 h-[120px]">
+                                            <button
+                                                onClick={() => handleUpdateSettings({ full_rooms: Math.max(0, settings.full_rooms - 1) })}
+                                                disabled={settings.full_rooms <= 0}
+                                                className={`flex-1 flex flex-col items-center justify-center px-2 py-4 rounded-xl border transition-all ${settings.full_rooms <= 0 ? 'bg-[#1A1A1A] border-[#2A2A2A] opacity-50 cursor-not-allowed text-[#5A5A5A]' : 'bg-green-900/10 border-green-500/30 hover:bg-green-900/30 hover:border-green-500/50 text-green-500 group'}`}>
+                                                <span className="text-3xl font-bold mb-1 group-hover:scale-110 transition-transform leading-none">-</span>
+                                                <span className="text-[11px] md:text-sm font-bold uppercase tracking-wider">Free a Room</span>
+                                                <span className="text-[9px] mt-1 opacity-70">Decrease booked</span>
+                                            </button>
+
+                                            <div className="flex flex-col items-center justify-center px-4 md:px-6 w-24 md:w-32 border-x border-[#3D1C00] shrink-0">
+                                                <span className="text-4xl md:text-5xl font-bold text-white leading-none">{settings.full_rooms}</span>
+                                                <span className="text-[10px] font-bold text-[#E8760A] uppercase mt-2">Booked</span>
+                                            </div>
+
+                                            <button
+                                                onClick={() => handleUpdateSettings({ full_rooms: Math.min(settings.total_rooms, settings.full_rooms + 1) })}
+                                                disabled={settings.full_rooms >= settings.total_rooms}
+                                                className={`flex-1 flex flex-col items-center justify-center px-2 py-4 rounded-xl border transition-all ${settings.full_rooms >= settings.total_rooms ? 'bg-[#1A1A1A] border-[#2A2A2A] opacity-50 cursor-not-allowed text-[#5A5A5A]' : 'bg-red-900/10 border-red-500/30 hover:bg-red-900/30 hover:border-red-500/50 text-red-500 group'}`}>
+                                                <span className="text-3xl font-bold mb-1 group-hover:scale-110 transition-transform leading-none">+</span>
+                                                <span className="text-[11px] md:text-sm font-bold uppercase tracking-wider">Book a Room</span>
+                                                <span className="text-[9px] mt-1 opacity-70">Increase booked</span>
+                                            </button>
                                         </div>
                                     </div>
                                     <div className="mt-6 flex items-center justify-between bg-[#0D0D0D] p-4 rounded-xl border border-[#3D1C00]">

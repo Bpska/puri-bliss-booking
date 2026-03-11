@@ -70,7 +70,7 @@ async function syncDB() {
 
     // Seed default settings if not present
     await Setting.findOrCreate({ where: { key: 'rooms_full' }, defaults: { value: false } });
-    await Setting.findOrCreate({ where: { key: 'total_rooms' }, defaults: { value: 12 } });
+    await Setting.findOrCreate({ where: { key: 'total_rooms' }, defaults: { value: 6 } });
     await Setting.findOrCreate({ where: { key: 'full_rooms' }, defaults: { value: 0 } });
 }
 
