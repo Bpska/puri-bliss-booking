@@ -6,7 +6,7 @@ export type PageId = 'home' | 'rooms' | 'detail' | 'contact' | 'admin' | 'about'
 
 export function useAppState() {
     const [page, setPage] = useState<PageId>('home');
-    const [selectedRoom, setSelectedRoom] = useState<Room>(ROOMS[0]);
+    const [selectedRoomId, setSelectedRoomId] = useState<number>(ROOMS[0].id);
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -98,8 +98,7 @@ export function useAppState() {
         setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
     };
 
-    // Use admin-merged rooms, defensively merging static ROOMS if they are missing from allRooms
-    const getFilteredRooms = (): Room[] => {
+    const getAllProcessedRooms = (): Room[] => {
         const rooms: Room[] = [...ROOMS]; // start with static rooms
         // override static rooms with admin data, or append custom ones
         for (const r of allRooms) {
@@ -122,6 +121,17 @@ export function useAppState() {
             else rooms.push(mapped);
         }
 
+        const festivalMultiplier = getFestivalMultiplier(checkIn).multiplier;
+        if (festivalMultiplier !== 1) {
+            for (const r of rooms) {
+                r.price = Math.round(r.price * festivalMultiplier);
+            }
+        }
+        return rooms;
+    };
+
+    const getFilteredRooms = (): Room[] => {
+        const rooms = getAllProcessedRooms();
         if (filter === 'All Rooms') return rooms;
         const exactMatch = rooms.filter(r => r.name === filter || r.name.toLowerCase() === filter.toLowerCase());
         if (exactMatch.length > 0) return exactMatch;
@@ -129,7 +139,7 @@ export function useAppState() {
         if (filter === 'AC' || filter === 'AC Room') return rooms.filter(r => r.features.includes('Air Conditioning'));
         if (filter === 'Non-AC') return rooms.filter(r => !r.features.includes('Air Conditioning'));
         if (filter === 'Deluxe') return rooms.filter(r => r.type === 'Deluxe' || r.type === 'Suite');
-        if (filter === 'Budget') return rooms.filter(r => r.price < 2000);
+        if (filter === 'Budget') return rooms.filter(r => r.price < 2000 * getFestivalMultiplier(checkIn).multiplier);
         return rooms;
     };
 
@@ -146,6 +156,9 @@ export function useAppState() {
     const setRoomImgIndex = (roomId: number, idx: number) => {
         setActiveRoomImg(prev => ({ ...prev, [roomId]: idx }));
     };
+
+    const selectedRoom = getAllProcessedRooms().find(r => r.id === selectedRoomId) || getAllProcessedRooms()[0];
+    const setSelectedRoom = (room: Room) => setSelectedRoomId(room.id);
 
     const navigateTo = (p: PageId, room?: Room) => {
         if (room) setSelectedRoom(room);
