@@ -333,8 +333,12 @@ export const HomePage = ({ state }: HomePageProps) => {
                     <div className="flex-1 bg-white/10 backdrop-blur-md rounded-2xl p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4 border border-white/20 w-full max-w-4xl mx-auto xl:mx-0 shadow-inner">
                         <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 md:divide-x divide-white/20 text-white">
                             {/* Check-in */}
-                            <div className="md:px-4 relative group">
+                            <div
+                                className="md:px-4 relative group cursor-pointer"
+                                onClick={() => { const el = document.getElementById('hero-checkin') as HTMLInputElement; el?.showPicker?.(); }}
+                            >
                                 <input
+                                    id="hero-checkin"
                                     type="date"
                                     value={checkIn}
                                     min={new Date().toISOString().split('T')[0]}
@@ -349,21 +353,24 @@ export const HomePage = ({ state }: HomePageProps) => {
                                             }
                                         }
                                     }}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                    style={{ color: 'transparent', background: 'transparent' }}
+                                    className="sr-only"
                                 />
                                 <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block pointer-events-none">Check-in</label>
                                 <div className="flex items-center gap-1.5 pointer-events-none group-hover:text-[#F59820] transition-colors relative z-0 w-full">
                                     <CalendarDays size={14} className="text-[#F59820] opacity-80 flex-shrink-0" />
-                                    <span className="text-sm md:text-base font-bold text-white truncate flex-1 block">
+                                    <span className="text-sm md:text-base font-bold text-white whitespace-nowrap flex-1 block">
                                         {formatDisplayDate(checkIn)}
                                     </span>
                                     <ChevronDown size={14} className="text-white/50 flex-shrink-0" />
                                 </div>
                             </div>
                             {/* Check-out */}
-                            <div className="md:px-4 relative group">
+                            <div
+                                className="md:px-4 relative group cursor-pointer"
+                                onClick={() => { const el = document.getElementById('hero-checkout') as HTMLInputElement; el?.showPicker?.(); }}
+                            >
                                 <input
+                                    id="hero-checkout"
                                     type="date"
                                     value={checkOut}
                                     min={checkIn}
@@ -373,13 +380,12 @@ export const HomePage = ({ state }: HomePageProps) => {
                                             setCheckOut(newCheckOut);
                                         }
                                     }}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                    style={{ color: 'transparent', background: 'transparent' }}
+                                    className="sr-only"
                                 />
                                 <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block pointer-events-none">Check-out</label>
                                 <div className="flex items-center gap-1.5 pointer-events-none group-hover:text-[#F59820] transition-colors relative z-0 w-full">
                                     <CalendarDays size={14} className="text-[#F59820] opacity-80 flex-shrink-0" />
-                                    <span className="text-sm md:text-base font-bold text-white truncate flex-1 block">
+                                    <span className="text-sm md:text-base font-bold text-white whitespace-nowrap flex-1 block">
                                         {formatDisplayDate(checkOut)}
                                     </span>
                                     <ChevronDown size={14} className="text-white/50 flex-shrink-0" />
@@ -390,7 +396,7 @@ export const HomePage = ({ state }: HomePageProps) => {
                                 <label className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-[#F59820] mb-0.5 block pointer-events-none">Guests & Rooms</label>
                                 <div className="flex items-center gap-1.5 pointer-events-none group-hover:text-[#F59820] transition-colors relative z-0 w-full">
                                     <Users size={14} className="text-[#F59820] opacity-80 flex-shrink-0" />
-                                    <div className="text-sm md:text-base font-bold text-white truncate flex-1 block">
+                                    <div className="text-sm md:text-base font-bold text-white whitespace-nowrap overflow-hidden flex-1 block">
                                         {guests} {guests === 1 ? 'Adult' : 'Adults'} · 1 Room
                                     </div>
                                     <ChevronDown size={14} className="text-white/50 flex-shrink-0" />
@@ -398,11 +404,11 @@ export const HomePage = ({ state }: HomePageProps) => {
                                 {isGuestsOpen && (
                                     <>
                                         <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); setIsGuestsOpen(false); }} />
-                                        <div className="absolute top-full left-4 right-4 md:left-4 md:right-4 mt-2 bg-white rounded-xl shadow-2xl z-50 overflow-hidden border border-gray-100 animate-fadeIn origin-top">
+                                        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl z-50 overflow-hidden border border-gray-100 animate-fadeIn origin-top min-w-[170px]">
                                             {[1, 2, 3, 4, 5, 6].map(num => (
                                                 <div
                                                     key={num}
-                                                    className={`px-4 py-3 text-sm md:text-base font-bold cursor-pointer transition-colors border-b last:border-0 border-gray-100 ${guests === num ? 'bg-[#FFF2E0] text-[#E8760A]' : 'text-[#3D1C00] hover:bg-gray-50'}`}
+                                                    className={`px-4 py-3 text-sm md:text-base font-bold cursor-pointer transition-colors border-b last:border-0 border-gray-100 whitespace-nowrap ${guests === num ? 'bg-[#FFF2E0] text-[#E8760A]' : 'text-[#3D1C00] hover:bg-gray-50'}`}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setGuests(num);
@@ -834,7 +840,7 @@ export const HomePage = ({ state }: HomePageProps) => {
 
                     {/* 🚗 How to Reach */}
                     <div className="px-4 md:px-12 lg:px-20 mb-6">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-4 mb-4">
                             <div className="flex items-center gap-2">
                                 <div className="h-1 w-8 rounded-full bg-[#E8760A]" />
                                 <h3 className="font-['Playfair_Display'] text-xl md:text-2xl font-bold text-[#1A0A00]">How to Reach</h3>

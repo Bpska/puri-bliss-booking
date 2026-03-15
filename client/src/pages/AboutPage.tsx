@@ -201,7 +201,7 @@ export const AboutPage = ({ state }: AboutPageProps) => {
                                 Experience a diverse range of cuisines prepared in our pure vegetarian kitchen. We specialize in North Indian, South Indian, Chinese, and local Odia dishes prepared strictly without onion and garlic.
                             </p>
                             <div className="flex flex-wrap gap-2 mb-4">
-                                {['Breakfast: 6:30 AM - 11:00 AM', 'Lunch: 11:00 AM - 4:00 PM', 'Dinner: 7:00 PM - 11:30 PM'].map((t, i) => (
+                                {['Breakfast: 6:30 AM - 11:00 AM', 'Lunch: 11:00 AM - 4:00 PM', 'Dinner: 7:00 PM - 11:30 PM', 'Mid-Night'].map((t, i) => (
                                     <span key={i} className="bg-[#FFF8F0] border border-[#FFE5C0] text-[#E8760A] text-xs md:text-sm px-3 py-1.5 rounded-full font-medium">
                                         {t}
                                     </span>

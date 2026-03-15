@@ -1,4 +1,4 @@
-import { HOTEL_INFO, hotelLogoBW, fssaiLogo } from '../data/constants';
+import { HOTEL_INFO, hotelLogoBW } from '../data/constants';
 import { PageId } from '../hooks/useAppState';
 interface FooterProps {
     setPage?: (p: PageId) => void;
@@ -39,7 +39,7 @@ export const Footer = ({ setPage }: FooterProps = {}) => (
                         </div>
                         <div className="mt-3 hidden md:block">
                             <div className="inline-block bg-white rounded-md p-1.5 shadow-sm mb-1">
-                                <img src={fssaiLogo} alt="FSSAI" className="h-6 md:h-10 object-contain" />
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A017" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
                             </div>
                             <div className="text-white/90 text-xs md:text-sm font-semibold tracking-wide">License No. {HOTEL_INFO.foodLicense}</div>
                         </div>
@@ -77,6 +77,7 @@ export const Footer = ({ setPage }: FooterProps = {}) => (
                         <a href={`mailto:${HOTEL_INFO.email}`} className="block text-[#B08050] hover:text-[#E8760A] transition-colors truncate">✉️ {HOTEL_INFO.email}</a>
                         <a href={`tel:${HOTEL_INFO.phone}`} className="block text-[#B08050] hover:text-[#E8760A] transition-colors">📞 +91 94373 88224</a>
                         <a href="tel:06752459250" className="block text-[#B08050] hover:text-[#E8760A] transition-colors">📞 Land Line: 06752 459250</a>
+                        <a href={HOTEL_INFO.website} target="_blank" rel="noopener noreferrer" className="block text-[#B08050] hover:text-[#E8760A] transition-colors">🌐 {HOTEL_INFO.website.replace(/^https?:\/\//, '')}</a>
                     </div>
                 </div>
 
@@ -85,7 +86,7 @@ export const Footer = ({ setPage }: FooterProps = {}) => (
                     <div className="text-[#D4A017] font-semibold text-[10px] md:text-xs uppercase tracking-wider mb-2 md:mb-3 text-center md:text-left">Location</div>
                     <div className="rounded-xl overflow-hidden border-2 border-white/10 shadow-lg flex-1 min-h-[220px]">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1872.4828343725654!2d85.82361110000002!3d19.8136111!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a19c417631cc9bf%3A0x6bba3bcaf5675e2!2sShri%20Jagannatha%20Temple%20Puri!5e0!3m2!1sen!2sin!4v1709400000000!5m2!1sen!2sin"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25300.21422167238!2d85.78776561289135!3d19.79873984900585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a19c7003d7d26d7%3A0xe071fee0c0e5b665!2sHotel%20Amruta%20Bhojana!5e1!3m2!1sen!2sin!4v1773589279344!5m2!1sen!2sin"
                             title="Hotel Amruta Bhojana Location"
                             className="w-full h-full border-0 bg-[#1A0A00]"
                             allowFullScreen={true}
@@ -119,17 +120,18 @@ export const Footer = ({ setPage }: FooterProps = {}) => (
             </div>
         </div>
 
-        {/* Scroll to Top Arrow */}
+        {/* Go to Home Button */}
         <button
             onClick={() => {
                 if (setPage) setPage('home');
                 window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             }}
             className="fixed bottom-20 md:bottom-6 right-4 md:right-6 w-10 h-10 md:w-12 md:h-12 bg-[#E8760A] hover:bg-[#F59820] backdrop-blur-md border border-[#FFE5C0]/30 rounded-full flex items-center justify-center text-white shadow-xl transition-all active:scale-90 z-[60]"
-            aria-label="Scroll to top"
+            aria-label="Go to home"
         >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 15l-6-6-6 6" />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
         </button>
 
