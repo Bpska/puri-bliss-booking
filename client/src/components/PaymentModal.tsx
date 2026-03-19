@@ -73,7 +73,7 @@ export const PaymentModal = ({ isOpen, onClose, roomName, roomPrice }: PaymentMo
                         <div className="bg-white/10 rounded-xl px-4 py-3 space-y-2">
                             <div className="flex items-center justify-between">
                                 <span className="text-white/80 text-sm">{roomName}</span>
-                                {roomPrice && <span className="text-white/60 text-sm">₹{roomPrice.toLocaleString()}/night</span>}
+                                {roomPrice && <span className="text-white/60 text-sm">₹{roomPrice.toLocaleString()}</span>}
                             </div>
                             {roomPrice && (
                                 <>

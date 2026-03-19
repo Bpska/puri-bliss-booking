@@ -28,6 +28,7 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
         email: '',
         phone: '',
     });
+    const [bookingRooms, setBookingRooms] = useState(1);
     const [currentRoom, setCurrentRoom] = useState<Room | null>(room);
     const [submitted, setSubmitted] = useState(false);
     const [showPayment, setShowPayment] = useState(false);
@@ -70,7 +71,7 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
         try {
             await createBooking({
                 roomId: currentRoom!.id,
-                roomName: currentRoom!.name,
+                roomName: `${currentRoom!.name} (${bookingRooms} Rooms)`,
                 userName: formData.name,
                 userEmail: formData.email,
                 userPhone: formData.phone,
@@ -92,8 +93,18 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
         setShowPayment(false);
         setSubmitted(false);
         setFormData({ name: '', email: '', phone: '' });
+        setBookingRooms(1);
         onClose();
     };
+
+    const calculateNights = (start?: string, end?: string) => {
+        if (!start || !end) return 1;
+        const d1 = new Date(start);
+        const d2 = new Date(end);
+        const diff = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24));
+        return diff > 0 ? diff : 1;
+    };
+    const nights = calculateNights(checkIn, checkOut);
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
@@ -140,6 +151,14 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                         <div className="text-[10px] text-[#7A5230] text-center"><div className="font-bold uppercase mb-0.5">Guests</div><div className="text-[#1A0A00] font-semibold">{guests || 1}</div></div>
                                     </div>
                                 )}
+                                <div className="flex items-center justify-between bg-white/60 p-2 rounded-lg mb-2 border border-[#FFE5C0]/50">
+                                    <span className="text-[11px] font-bold text-[#7A5230] uppercase ml-2">Number of Rooms</span>
+                                    <div className="flex items-center gap-3 mr-2">
+                                        <button type="button" onClick={() => setBookingRooms(Math.max(1, bookingRooms - 1))} className="w-6 h-6 rounded-full border border-[#E8760A] text-[#E8760A] flex items-center justify-center font-bold bg-white active:scale-95 transition-transform pb-0.5 leading-none">−</button>
+                                        <span className="font-bold text-[#1A0A00] w-3 text-center text-xs">{bookingRooms}</span>
+                                        <button type="button" onClick={() => setBookingRooms(bookingRooms + 1)} className="w-6 h-6 rounded-full bg-[#E8760A] text-white flex items-center justify-center font-bold active:scale-95 transition-transform pb-0.5 leading-none">+</button>
+                                    </div>
+                                </div>
                                 <div className="flex flex-wrap gap-2 mb-3">
                                     {currentRoom.features.slice(0, 3).map((f, i) => (
                                         <span key={i} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#FFE5C0] text-[#7A5230]">{f}</span>
@@ -149,16 +168,16 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
                                 {/* GST Breakdown */}
                                 <div className="bg-white/70 rounded-xl p-3 border border-[#FFE5C0]/50 space-y-1.5">
                                     <div className="flex justify-between text-[11px]">
-                                        <span className="text-[#7A5230]">Room Tariff</span>
-                                        <span className="text-[#1A0A00] font-semibold">₹{currentRoom.price.toLocaleString()}</span>
+                                        <span className="text-[#7A5230]">Room Tariff ({nights} {nights === 1 ? 'Night' : 'Nights'} x {bookingRooms})</span>
+                                        <span className="text-[#1A0A00] font-semibold">₹{(currentRoom.price * bookingRooms * nights).toLocaleString()}</span>
                                     </div>
                                     <div className="flex justify-between text-[11px]">
                                         <span className="text-[#7A5230]">GST (5%)</span>
-                                        <span className="text-[#1A0A00] font-semibold">₹{Math.round(currentRoom.price * 0.05).toLocaleString()}</span>
+                                        <span className="text-[#1A0A00] font-semibold">₹{Math.round(currentRoom.price * bookingRooms * nights * 0.05).toLocaleString()}</span>
                                     </div>
                                     <div className="border-t border-[#FFE5C0] pt-1.5 flex justify-between text-sm">
                                         <span className="font-bold text-[#E8760A]">Total Payable</span>
-                                        <span className="font-bold text-[#E8760A]">₹{Math.round(currentRoom.price * 1.05).toLocaleString()}/night</span>
+                                        <span className="font-bold text-[#E8760A]">₹{Math.round(currentRoom.price * bookingRooms * nights * 1.05).toLocaleString()}</span>
                                     </div>
                                     <p className="text-[8px] text-[#7A5230]/50">* Inclusive of 5% GST as per Government norms</p>
                                 </div>
@@ -280,8 +299,8 @@ export const BookingFormModal = ({ isOpen, onClose, room, checkIn, checkOut, gue
             <PaymentModal
                 isOpen={showPayment}
                 onClose={handlePaymentClose}
-                roomName={currentRoom.name}
-                roomPrice={currentRoom.price}
+                roomName={`${currentRoom.name} (${bookingRooms} Room${bookingRooms > 1 ? 's' : ''}, ${nights} Night${nights > 1 ? 's' : ''})`}
+                roomPrice={currentRoom.price * bookingRooms * nights}
             />
         </div >
     );
