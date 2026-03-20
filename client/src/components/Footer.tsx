@@ -32,18 +32,18 @@ export const Footer = ({ setPage }: FooterProps = {}) => (
                     <p className="text-[#7A5230] text-[10px] md:text-xs mt-1">{HOTEL_INFO.rating}/5 · {HOTEL_INFO.reviewCount} Google Reviews</p>
 
                     {/* Official Numbers - Highlighted */}
-                    <div className="mt-5 space-y-3">
-                        <div className="inline-flex items-center gap-2 bg-[#D4A017]/10 border border-[#D4A017]/30 px-3 py-1.5 rounded-full">
+                    <div className="mt-4 md:mt-5 flex flex-row items-stretch justify-center md:flex-col md:items-start gap-2 md:gap-3 w-full px-1 md:px-0">
+                        <div className="flex flex-col md:flex-row items-center justify-center bg-[#D4A017]/10 border border-[#D4A017]/30 px-2 md:px-3 py-1.5 rounded-xl md:rounded-full flex-1 md:flex-none">
                             <span className="text-[#D4A017] text-[10px] font-bold uppercase tracking-widest shrink-0">GSTIN</span>
-                            <span className="text-white text-xs font-semibold">{HOTEL_INFO.gstNumber}</span>
+                            <span className="text-white text-[9px] md:text-xs font-semibold text-center mt-0.5 md:mt-0 md:ml-2">{HOTEL_INFO.gstNumber}</span>
                         </div>
-                        <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-2 rounded-lg inline-flex w-fit">
-                            <div className="bg-white rounded p-1 w-12 h-auto shrink-0 flex items-center justify-center">
+                        <div className="flex items-center justify-center md:justify-start gap-1.5 md:gap-3 bg-white/5 border border-white/10 p-1.5 md:p-2 rounded-xl flex-1 md:flex-none">
+                            <div className="bg-white rounded p-0.5 md:p-1 w-7 md:w-12 h-auto shrink-0 flex items-center justify-center">
                                 <img src={fssaiLogo} alt="FSSAI" className="w-full h-full object-contain" />
                             </div>
-                            <div>
-                                <div className="text-[#D4A017] text-[10px] font-bold uppercase tracking-widest mb-0.5 mt-0.5">License No.</div>
-                                <div className="text-white text-xs font-semibold tracking-wide">{HOTEL_INFO.foodLicense}</div>
+                            <div className="text-left">
+                                <div className="text-[#D4A017] text-[8px] md:text-[10px] font-bold uppercase tracking-widest mb-[1px]">Lic. No.</div>
+                                <div className="text-white text-[9px] md:text-xs font-semibold tracking-wide leading-none">{HOTEL_INFO.foodLicense}</div>
                             </div>
                         </div>
                     </div>
