@@ -1,4 +1,4 @@
-import { HOTEL_INFO, hotelLogoBW } from '../data/constants';
+import { HOTEL_INFO, hotelLogoBW, fssaiLogo } from '../data/constants';
 import { PageId } from '../hooks/useAppState';
 interface FooterProps {
     setPage?: (p: PageId) => void;
@@ -32,16 +32,19 @@ export const Footer = ({ setPage }: FooterProps = {}) => (
                     <p className="text-[#7A5230] text-[10px] md:text-xs mt-1">{HOTEL_INFO.rating}/5 · {HOTEL_INFO.reviewCount} Google Reviews</p>
 
                     {/* Official Numbers - Highlighted */}
-                    <div className="mt-5 space-y-2">
+                    <div className="mt-5 space-y-3">
                         <div className="inline-flex items-center gap-2 bg-[#D4A017]/10 border border-[#D4A017]/30 px-3 py-1.5 rounded-full">
                             <span className="text-[#D4A017] text-[10px] font-bold uppercase tracking-widest shrink-0">GSTIN</span>
                             <span className="text-white text-xs font-semibold">{HOTEL_INFO.gstNumber}</span>
                         </div>
-                        <div className="mt-3 hidden md:block">
-                            <div className="inline-block bg-white rounded-md p-1.5 shadow-sm mb-1">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A017" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                        <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-2 rounded-lg inline-flex w-fit">
+                            <div className="bg-white rounded p-1 w-12 h-auto shrink-0 flex items-center justify-center">
+                                <img src={fssaiLogo} alt="FSSAI" className="w-full h-full object-contain" />
                             </div>
-                            <div className="text-white/90 text-xs md:text-sm font-semibold tracking-wide">License No. {HOTEL_INFO.foodLicense}</div>
+                            <div>
+                                <div className="text-[#D4A017] text-[10px] font-bold uppercase tracking-widest mb-0.5 mt-0.5">License No.</div>
+                                <div className="text-white text-xs font-semibold tracking-wide">{HOTEL_INFO.foodLicense}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
