@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ROOMS, Room } from '../data/constants';
-import { getRooms, AdminRoom, getSettings, FestivalRule } from '../data/adminStore';
+import { getRooms, AdminRoom, getSettings, FestivalRule, postVisit } from '../data/adminStore';
 
 export type PageId = 'home' | 'rooms' | 'detail' | 'contact' | 'admin' | 'about';
 
@@ -42,6 +42,12 @@ export function useAppState() {
     const [festivalRules, setFestivalRules] = useState<FestivalRule[]>([]);
     const [bookingModalOpen, setBookingModalOpen] = useState(false);
     const [bookingRoom, setBookingRoom] = useState<Room | null>(null);
+    const [visitorCount, setVisitorCount] = useState<number>(0);
+
+    // Track visitors on mount
+    useEffect(() => {
+        postVisit().then(res => setVisitorCount(res.visitor_count)).catch(() => {});
+    }, []);
 
     // Check URL hash for routing and browser back button support
     useEffect(() => {
@@ -215,5 +221,6 @@ export function useAppState() {
         getFestivalMultiplier,
         bookingModalOpen, bookingRoom, openBookingModal, closeBookingModal,
         formatDisplayDate,
+        visitorCount,
     };
 }

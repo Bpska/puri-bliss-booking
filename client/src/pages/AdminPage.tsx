@@ -525,18 +525,22 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
                         {tab === 'bookings' && (
                             <div className="animate-fadeUp">
                                 {/* Stats Cards */}
-                                <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
-                                    <div className="bg-gradient-to-br from-[#1A1A2E] to-[#16213E] rounded-2xl border border-[#2A2A4A] p-4 md:p-5">
-                                        <div className="flex items-center gap-2 text-blue-400 mb-2"><Users size={18} /><span className="text-[10px] uppercase font-bold tracking-wider">Total</span></div>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+                                    <div className="bg-gradient-to-br from-[#1A1A2E] to-[#16213E] rounded-2xl border border-[#2A2A4A] p-4 md:p-5 flex flex-col justify-between">
+                                        <div className="flex items-center gap-2 text-blue-400 mb-2"><Users size={18} /><span className="text-[10px] uppercase font-bold tracking-wider">Bookings</span></div>
                                         <div className="text-2xl md:text-3xl font-bold text-white">{totalBookings}</div>
                                     </div>
-                                    <div className="bg-gradient-to-br from-[#1A2E1A] to-[#16351E] rounded-2xl border border-[#2A4A2A] p-4 md:p-5">
+                                    <div className="bg-gradient-to-br from-[#1A2E1A] to-[#16351E] rounded-2xl border border-[#2A4A2A] p-4 md:p-5 flex flex-col justify-between">
                                         <div className="flex items-center gap-2 text-green-400 mb-2"><CheckCircle size={18} /><span className="text-[10px] uppercase font-bold tracking-wider">Confirmed</span></div>
                                         <div className="text-2xl md:text-3xl font-bold text-white">{confirmedBookings}</div>
                                     </div>
-                                    <div className="bg-gradient-to-br from-[#2E2A1A] to-[#35301E] rounded-2xl border border-[#4A3A2A] p-4 md:p-5">
+                                    <div className="bg-gradient-to-br from-[#2E2A1A] to-[#35301E] rounded-2xl border border-[#4A3A2A] p-4 md:p-5 flex flex-col justify-between">
                                         <div className="flex items-center gap-2 text-yellow-400 mb-2"><Clock size={18} /><span className="text-[10px] uppercase font-bold tracking-wider">Pending</span></div>
                                         <div className="text-2xl md:text-3xl font-bold text-white">{pendingBookings}</div>
+                                    </div>
+                                    <div className="bg-gradient-to-br from-[#3E1C33] to-[#250F1D] rounded-2xl border border-[#5C2A4A] p-4 md:p-5 flex flex-col justify-between">
+                                        <div className="flex items-center gap-2 text-pink-400 mb-2"><Users size={18} /><span className="text-[10px] uppercase font-bold tracking-wider">Visitors</span></div>
+                                        <div className="text-2xl md:text-3xl font-bold text-white">{settings.visitor_count ? settings.visitor_count.toLocaleString() : '0'}</div>
                                     </div>
                                 </div>
 

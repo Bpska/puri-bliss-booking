@@ -31,4 +31,20 @@ router.put('/', authMiddleware, async (req, res) => {
     }
 });
 
+// POST /api/settings/visit — increment visitor count (public)
+router.post('/visit', async (req, res) => {
+    try {
+        const [setting, created] = await Setting.findOrCreate({
+            where: { key: 'visitor_count' },
+            defaults: { value: 0 }
+        });
+        const currentCount = parseInt(setting.value) || 0;
+        setting.value = currentCount + 1;
+        await setting.save();
+        res.json({ visitor_count: setting.value });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

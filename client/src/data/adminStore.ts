@@ -110,6 +110,7 @@ export interface Settings {
     full_rooms: number;
     hero_images?: { src: string; title: string; subtitle?: string }[];
     festival_pricing?: FestivalRule[];
+    visitor_count?: number;
 }
 
 // ─── Bookings ─────────────────────────────────────────────
@@ -234,5 +235,13 @@ export async function updateSettings(updates: Partial<Settings>): Promise<Settin
         method: 'PUT',
         headers: authHeaders(),
         body: JSON.stringify(updates),
+    });
+}
+
+// ─── Analytics ────────────────────────────────────────────
+export async function postVisit(): Promise<{ visitor_count: number }> {
+    return apiFetch<{ visitor_count: number }>('/settings/visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
     });
 }
