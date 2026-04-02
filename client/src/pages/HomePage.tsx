@@ -159,18 +159,7 @@ export const HomePage = ({ state }: HomePageProps) => {
 
     return (
         <div className="animate-fadeUp overflow-y-auto pb-20 md:pb-6">
-            {/* Floating Visitor Counter - Left Side */}
-            <div className="fixed left-3 bottom-36 md:bottom-24 md:left-6 z-40 bg-[#1A0A00]/60 backdrop-blur-md border border-[#E8760A]/30 rounded-2xl p-2 md:p-3 shadow-2xl flex items-center gap-2.5 md:gap-3 transition-transform hover:scale-105" style={{ animation: 'slideDown 0.5s ease-out 1.5s both' }}>
-                <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-[#E8760A] to-[#F59820] rounded-xl flex items-center justify-center text-white shadow-inner">
-                    <Users size={16} className="md:w-5 md:h-5" />
-                </div>
-                <div className="pr-2">
-                    <div className="text-[9px] md:text-[10px] font-bold text-[#FFE5C0]/80 uppercase tracking-wider mb-0.5">Total Visitors</div>
-                    <div className="font-['Playfair_Display'] text-sm md:text-base font-bold text-white leading-none">
-                        {state.visitorCount ? state.visitorCount.toLocaleString() : '...'}
-                    </div>
-                </div>
-            </div>
+
 
             {/* All Rooms Full/Availability Banner */}
             {roomsFull ? (
@@ -890,6 +879,21 @@ export const HomePage = ({ state }: HomePageProps) => {
 
                     {/* Google Reviews */}
                     <GoogleReviews />
+
+                    {/* Total Visitors — inline after Guest Reviews */}
+                    <div className="px-4 md:px-12 lg:px-20 mt-4 mb-6 flex justify-end">
+                        <div className="inline-flex items-center gap-3 bg-[#1A0A00]/80 backdrop-blur-md border border-[#E8760A]/30 rounded-2xl px-4 py-3 shadow-xl transition-transform hover:scale-105">
+                            <div className="w-10 h-10 bg-gradient-to-br from-[#E8760A] to-[#F59820] rounded-xl flex items-center justify-center text-white shadow-inner flex-shrink-0">
+                                <Users size={18} />
+                            </div>
+                            <div>
+                                <div className="text-[10px] font-bold text-[#FFE5C0]/80 uppercase tracking-wider mb-0.5">Total Visitors</div>
+                                <div className="font-['Playfair_Display'] text-lg font-bold text-white leading-none">
+                                    {state.visitorCount ? state.visitorCount.toLocaleString() : '...'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>{/* end relative z-10 */}
             </div>{/* end background image wrapper */}

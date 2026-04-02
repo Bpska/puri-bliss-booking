@@ -102,6 +102,8 @@ export interface FestivalRule {
     endDate: string;
     multiplier: number;
     active: boolean;
+    /** Optional: admin-set fixed price per room (roomId → price). When set, overrides multiplier. */
+    fixedPrices?: Record<number, number>;
 }
 
 export interface Settings {

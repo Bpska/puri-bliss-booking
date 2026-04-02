@@ -998,13 +998,29 @@ export const AdminPage = ({ onBack, refreshRooms }: AdminPageProps) => {
                                             <div>
                                                 <label className="block text-[10px] text-[#7A5230] uppercase tracking-wider mb-1 font-bold">Start Date</label>
                                                 <input type="date" value={newFestival.startDate}
-                                                    onChange={e => setNewFestival(p => ({ ...p, startDate: e.target.value }))}
+                                                    onChange={e => {
+                                                        const val = e.target.value;
+                                                        const isJune = val && new Date(val).getMonth() === 5;
+                                                        setNewFestival(p => ({
+                                                            ...p,
+                                                            startDate: val,
+                                                            multiplier: isJune ? '2' : p.multiplier
+                                                        }));
+                                                    }}
                                                     className="w-full bg-[#0D0D0D] border border-[#3D1C00] rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#E8760A] transition-colors" />
                                             </div>
                                             <div>
                                                 <label className="block text-[10px] text-[#7A5230] uppercase tracking-wider mb-1 font-bold">End Date</label>
                                                 <input type="date" value={newFestival.endDate}
-                                                    onChange={e => setNewFestival(p => ({ ...p, endDate: e.target.value }))}
+                                                    onChange={e => {
+                                                        const val = e.target.value;
+                                                        const isJune = val && new Date(val).getMonth() === 5;
+                                                        setNewFestival(p => ({
+                                                            ...p,
+                                                            endDate: val,
+                                                            multiplier: (isJune && p.multiplier === '1.5') ? '2' : p.multiplier
+                                                        }));
+                                                    }}
                                                     min={newFestival.startDate}
                                                     className="w-full bg-[#0D0D0D] border border-[#3D1C00] rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#E8760A] transition-colors" />
                                             </div>
